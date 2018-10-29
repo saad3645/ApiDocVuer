@@ -48,8 +48,8 @@ export default new Router({
         },
         {
           path: ':apidoc/reference/:collection',
-          name: 'ApiReference',
-          component: () => import(/* webpackChunkName: "apireference" */ './views/Docs/ApiReference.vue')
+          name: 'Reference',
+          component: () => import(/* webpackChunkName: "reference" */ './views/Docs/Reference.vue')
         }
       ]
     },
