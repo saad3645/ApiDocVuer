@@ -3,6 +3,18 @@ import Router from 'vue-router'
 
 Vue.use(Router)
 
+const authenticate = function(to, from, next) {
+  if (!localStorage.user || !localStorage.token) {
+    next({path: '/login'})
+  }
+  else if (to.name === 'Default') {
+    next({path: '/docs'})
+  }
+  else {
+    next()
+  }
+}
+
 export default new Router({
   mode: 'history',
   base: process.env.BASE_URL,
@@ -11,32 +23,35 @@ export default new Router({
       path: '/',
       name: 'Default',
       component: () => import(/* webpackChunkName: "default" */ './views/Default.vue'),
-      children: [
-        {
-          path: '/collections',
-          name: 'Collections',
-          component: () => import(/* webpackChunkName: "collections" */ './views/Collections.vue'),
-          props: true
-        },
-        {
-          path: '/docs/reference/:collection',
-          name: 'ApiDoc',
-          component: () => import(/* webpackChunkName: "apidoc" */ './views/ApiDoc.vue')
-        }
-      ],
-      beforeEnter: (to, from, next) => {
-        if (!localStorage.user || !localStorage.token) {
-          next({path: '/login'})
-        }
-        else {
-          next()
-        }
-      }
+      beforeEnter: authenticate
     },
     {
       path: '/login',
       name: 'Login',
       component: () => import(/* webpackChunkName: "login" */ './views/Login.vue')
+    },
+    {
+      path: '/docs',
+      component: () => import(/* webpackChunkName: "apidocsroot" */ './views/Docs/Root.vue'),
+      beforeEnter: authenticate,
+      children: [
+        {
+          path: '',
+          name: 'Docs',
+          component: () => import(/* webpackChunkName: "apidocs" */ './views/Docs/Index.vue'),
+          beforeEnter: authenticate
+        },
+        {
+          path: ':apidoc/collections',
+          name: 'Collections',
+          component: () => import(/* webpackChunkName: "collections" */ './views/Docs/Collections.vue')
+        },
+        {
+          path: ':apidoc/reference/:collection',
+          name: 'ApiReference',
+          component: () => import(/* webpackChunkName: "apireference" */ './views/Docs/ApiReference.vue')
+        }
+      ]
     },
     {
       path: '/about',

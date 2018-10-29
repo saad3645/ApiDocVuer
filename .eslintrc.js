@@ -13,7 +13,7 @@ module.exports = {
     'block-spacing': ["error", "never"],
     'brace-style': ["error", "stroustrup", {"allowSingleLine": true}],
     'object-curly-spacing': ['error', 'never'],
-    'space-before-function-paren': ["error", {"anonymous": "always", "named": "never", "asyncArrow": "always"}]
+    'space-before-function-paren': ["error", {"anonymous": "never", "named": "never", "asyncArrow": "always"}]
   },
   parserOptions: {
     parser: 'babel-eslint'

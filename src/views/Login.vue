@@ -86,7 +86,7 @@ export default {
         const res = await axios.post(LOGIN_URL, this.form)
         localStorage.setItem('user', this.form.username)
         localStorage.setItem('token', res.data.token)
-        this.$router.push({path: '/collections'})
+        this.$router.push({path: '/docs'})
         // window.location = ('http://google.com?user=' + this.form.username + '&token=' + res.data.token) // ('http://localhost:3000/c/sales?user=' + this.form.username + '&token=' + res.data.token)
       }
       catch (error) {
