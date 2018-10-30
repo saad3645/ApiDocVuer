@@ -1,10 +1,7 @@
 <template>
   <div class="app-root">
     <md-app md-mode="reveal">
-      <md-app-toolbar class="md-primary">
-        <span class="md-title">Invariant Telecom</span>
-        <NavbarContent :apidoc="apidoc"></NavbarContent>
-      </md-app-toolbar>
+      <NavbarContent slot="md-app-toolbar"></NavbarContent>
       <md-app-content>
         <router-view/>
       </md-app-content>
@@ -16,15 +13,18 @@
 import NavbarContent from '@/components/NavbarContent'
 export default {
   name: 'DocsRoot',
-  components: {NavbarContent},
-  data: () => ({
-    apidoc: null
-  })
+  components: {NavbarContent}
 }
 </script>
 
 <style lang="scss" scoped>
   .md-app {
     height: 100vh;
+  }
+
+  .md-app-content {
+    padding-top: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
   }
 </style>

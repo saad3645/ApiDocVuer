@@ -1,47 +1,20 @@
 <template>
-  <div class="collections">
-    <md-table v-model="collections">
-      <md-table-toolbar>
-        <h1 class="md-title">Collections</h1>
-      </md-table-toolbar>
-      <md-table-row slot="md-table-row" slot-scope="{item}" md-selectable="single">
-        <md-table-cell md-label="ID" md-sort-by="id">{{ item.id }}</md-table-cell>
-        <md-table-cell md-label="Name" md-sort-by="name">{{ item.name }}</md-table-cell>
-        <md-table-cell md-label="Description">{{ item.email }}</md-table-cell>
-        <md-table-cell md-label="Permission">{{ item.gender }}</md-table-cell>
-      </md-table-row>
-
-      <md-table-row>
-        <md-table-head md-numeric>SL</md-table-head>
-        <md-table-head>Name</md-table-head>
-        <md-table-head>Description</md-table-head>
-        <md-table-head>Permission</md-table-head>
-      </md-table-row>
-
-      <md-table-row>
-        <md-table-cell md-numeric>1</md-table-cell>
-        <md-table-cell>Admin</md-table-cell>
-        <md-table-cell>Finance</md-table-cell>
-        <md-table-cell>Sales Support</md-table-cell>
-        <md-table-cell @click="alert">Distributor</md-table-cell>
-      </md-table-row>
-
-      <md-table-row>
-        <md-table-cell md-numeric>2</md-table-cell>
-        <md-table-cell>Odette Demageard</md-table-cell>
-        <md-table-cell>odemageard1@spotify.com</md-table-cell>
-        <md-table-cell>Female</md-table-cell>
-        <md-table-cell>Account Coordinator</md-table-cell>
-      </md-table-row>
-
-      <md-table-row>
-        <md-table-cell md-numeric>3</md-table-cell>
-        <md-table-cell>Vera Taleworth</md-table-cell>
-        <md-table-cell>vtaleworth2@google.ca</md-table-cell>
-        <md-table-cell>Male</md-table-cell>
-        <md-table-cell>Community Outreach Specialist</md-table-cell>
-      </md-table-row>
-    </md-table>
+  <div class="collections md-layout md-alignment-center-center">
+    <div class="md-layout-item md-size-70 md-small-size-90 md-xsmall-size-100">
+      <h1 class="md-display-4">Collections</h1>
+      <div class="md-layout md-alignment-center-center">
+        <md-card v-for="collection in doc.collections" :key="collection.id" md-with-hover class="md-layout-item">
+          <md-card-header>
+            <div class="md-title">{{collection.name}}</div>
+            <!--<div class="md-subhead">It also have a ripple</div>-->
+          </md-card-header>
+          <md-card-content>{{collection.description}}</md-card-content>
+          <md-card-actions>
+            <md-button :to="{name: 'Reference', params: {docName: docName, collectionId: collection.id, docId: doc.bin, doc: doc}}">View</md-button>
+          </md-card-actions>
+        </md-card>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -49,25 +22,18 @@
 import axios from 'axios'
 export default {
   name: 'Collections',
-  props: {
-    doc: String,
-    user: String
-  },
   data: () => ({
-    collections: [],
-    grid: [],
+    docName: null,
+    doc: null,
     snackbarMessage: 'Hello World',
     showSnackbar: false
   }),
-  computed: {
-    documentName() {
-      return this.doc.toUpperCase()
-    }
+
+  created() {
+    this.docName = this.$route.params.docName
+    this.doc = this.$route.params.doc
   },
-  mounted() {
-    this.collections.push({id: 1, name: 'Super Admin'}, {id: 2, name: 'Admin'}, {id: 3, name: 'Finance'}, {id: 4, name: 'Sales Support'}, {id: 5, name: 'Distributor'})
-    // this.getCollections(this.document, this.collections, this.user)
-  },
+
   methods: {
     async getCollections(document, collections, user) {
       if (!localStorage.token) {
@@ -100,11 +66,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .collections, .collections .md-app {
-    height: 100vh;
+  .md-display-4 {
+    font-size: 32px;
   }
 
-  .md-table .md-table-cell {
-    text-align: left;
+  .md-card {
+    min-width: 240px;
+    max-width: 300px;
+    margin-bottom: 16px;
   }
 </style>

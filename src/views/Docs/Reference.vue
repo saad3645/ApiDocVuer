@@ -1,57 +1,90 @@
 <template>
-  <div class="api-document-root">
-    <md-app-drawer md-permanent="clipped">
-      <MenuContent></MenuContent>
-    </md-app-drawer>
-    <md-app-content>
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Error quibusdam, non molestias et! Earum magnam, similique, quo recusandae placeat dicta asperiores modi sint ea repudiandae maxime? Quae non explicabo, neque.</p>
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Error quibusdam, non molestias et! Earum magnam, similique, quo recusandae placeat dicta asperiores modi sint ea repudiandae maxime? Quae non explicabo, neque.</p>
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Error quibusdam, non molestias et! Earum magnam, similique, quo recusandae placeat dicta asperiores modi sint ea repudiandae maxime? Quae non explicabo, neque.</p>
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Error quibusdam, non molestias et! Earum magnam, similique, quo recusandae placeat dicta asperiores modi sint ea repudiandae maxime? Quae non explicabo, neque.</p>
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Error quibusdam, non molestias et! Earum magnam, similique, quo recusandae placeat dicta asperiores modi sint ea repudiandae maxime? Quae non explicabo, neque.</p>
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Error quibusdam, non molestias et! Earum magnam, similique, quo recusandae placeat dicta asperiores modi sint ea repudiandae maxime? Quae non explicabo, neque.</p>
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Error quibusdam, non molestias et! Earum magnam, similique, quo recusandae placeat dicta asperiores modi sint ea repudiandae maxime? Quae non explicabo, neque.</p>
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Error quibusdam, non molestias et! Earum magnam, similique, quo recusandae placeat dicta asperiores modi sint ea repudiandae maxime? Quae non explicabo, neque.</p>
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Error quibusdam, non molestias et! Earum magnam, similique, quo recusandae placeat dicta asperiores modi sint ea repudiandae maxime? Quae non explicabo, neque.</p>
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Error quibusdam, non molestias et! Earum magnam, similique, quo recusandae placeat dicta asperiores modi sint ea repudiandae maxime? Quae non explicabo, neque.</p>
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Error quibusdam, non molestias et! Earum magnam, similique, quo recusandae placeat dicta asperiores modi sint ea repudiandae maxime? Quae non explicabo, neque.</p>
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Error quibusdam, non molestias et! Earum magnam, similique, quo recusandae placeat dicta asperiores modi sint ea repudiandae maxime? Quae non explicabo, neque.</p>
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Error quibusdam, non molestias et! Earum magnam, similique, quo recusandae placeat dicta asperiores modi sint ea repudiandae maxime? Quae non explicabo, neque.</p>
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Error quibusdam, non molestias et! Earum magnam, similique, quo recusandae placeat dicta asperiores modi sint ea repudiandae maxime? Quae non explicabo, neque.</p>
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Error quibusdam, non molestias et! Earum magnam, similique, quo recusandae placeat dicta asperiores modi sint ea repudiandae maxime? Quae non explicabo, neque.</p>
-    </md-app-content>
+  <div class="api-reference-wrap">
+    <md-toolbar md-elevation="0">
+      <div class="md-toolbar-section-start">
+        <h3 class="md-title">No Elevation</h3>
+        <span class="md-subheader">Version 1</span>
+      </div>
+      <div class="md-toolbar-section-end">
+        <md-button class="md-dense md-primary md-icon-button">
+          <md-icon>refresh</md-icon>
+        </md-button>
+        <md-button class="md-dense md-primary">Export</md-button>
+      </div>
+    </md-toolbar>
+    <md-content class="api-reference-container">
+      <md-drawer md-permanent="clipped">
+        <MenuContent></MenuContent>
+      </md-drawer>
+      <md-content>
+        <code>{{JSON.stringify(source)}}</code>
+      </md-content>
+    </md-content>
   </div>
 </template>
 
 <script>
+import axios from 'axios'
 import MenuContent from '@/components/MenuContent'
+
 export default {
   name: 'ApiDoc',
   components: {MenuContent},
   data: () => ({
-    source: {
-      openapi: '3.0.0',
-      info: {
-        title: 'GrabX',
-        version: '1.1.0'
+    docId: null,
+    docName: null,
+    doc: null,
+    source: null
+  }),
+
+  created() {
+    this.docId = this.$route.params.docId
+    this.docName = this.$route.params.docName
+    this.doc = this.$route.params.doc
+    this.getOpenApi(this.docId)
+  },
+
+  methods: {
+    async getOpenApi(docId) {
+      if (!localStorage.token) {
+        this.$router.push({name: 'Login'})
+        return
       }
-    },
-    treeOptions: {
-      maxDepth: 3
+
+      const url = process.env.VUE_APP_API_BASE_URL + '/d/' + docId + '/openapi'
+      const token = localStorage.token
+      const authHeader = 'Bearer ' + token
+
+      try {
+        const res = await axios.get(url, {headers: {Authorization: authHeader}})
+        this.source = res.data
+      }
+      catch (error) {
+        if (error.response && error.response.data && error.response.data.errors) {
+          if (error.response.status !== 401 && error.response.status !== 403) {
+            console.log('Error', error.response.data.errors)
+          }
+          this.snackbarMessage = error.response.data.errors[0].detail
+        }
+        else {
+          console.log('Error', error.message)
+          this.snackbarMessage = error.message
+        }
+      }
     }
-  })
+  }
 }
 </script>
 
 <style lang="scss" scoped>
-  .api-document {
+  .api-reference-wrap {
     height: 100vh;
   }
-  .md-app {
-    height: 100vh;
+  .api-reference-container {
+    display: inline-flex;
   }
   .md-drawer {
-    width: 250px;
-    max-width: calc(100vw - 125px);
+    min-width: 250px;
+    max-width: 250px;
   }
 </style>

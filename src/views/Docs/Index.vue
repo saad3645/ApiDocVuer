@@ -10,7 +10,7 @@
           </md-card-header>
           <md-card-content>{{doc.short_description}}</md-card-content>
           <md-card-actions>
-            <md-button @click="viewCollection(doc.id, doc.name)">View Collections</md-button>
+            <md-button :to="{name: 'Collections', params: {docName: doc.name, doc: doc}}">View Collections</md-button>
           </md-card-actions>
         </md-card>
       </div>
@@ -27,7 +27,7 @@ export default {
     docs: []
   }),
 
-  mounted() {
+  created() {
     // this.docs.push({name: 'wallet', heading: 'Wallet'}, {name: 'buddy', heading: 'Hey Buddy'})
     this.getDocs()
   },
@@ -77,5 +77,6 @@ export default {
   .md-card {
     min-width: 240px;
     max-width: 300px;
+    margin-bottom: 16px;
   }
 </style>
