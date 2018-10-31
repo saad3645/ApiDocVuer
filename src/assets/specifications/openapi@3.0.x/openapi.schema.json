@@ -226,7 +226,7 @@
       "$required": ["name"],
       "name": "string",
       "description": "string",
-      "x-heading": "string",
+      "x-title": "string",
       "x-tagGroup": "string"
     },
     "$minItems": 1,
@@ -238,20 +238,17 @@
       "$type": "object",
       "$required": ["name"],
       "name": "string",
-      "description": "string",
-      "x-heading": "string",
-      "x-display": ["boolean", false]
+      "title": "string",
+      "description": "string"
     },
     "$minItems": 1,
     "$uniqueItems": true
   },
   "x-defaultTagGroup": {
     "$type": "object",
-    "$required": ["name"],
-    "name": "string",
-    "description": "string",
-    "x-heading": "string",
-    "x-display": ["boolean", false]
+    "$required": ["title"],
+    "title": "string",
+    "description": "string"
   },
   "x-collections": {
     "$type": "array",

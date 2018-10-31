@@ -1,5 +1,5 @@
 <template>
-  <md-list-item md-expand class="menu-tag-item">
+  <md-list-item md-expand class="menu-endpoint-item">
     <span class="md-list-item-text">{{name}}</span>
     <md-list slot="md-expand">
       <md-list-item v-for="endpoint in endpoints" class="md-inset" :key="endpoint.operationId">
@@ -13,22 +13,9 @@
 <script>
 
 export default {
-  name: 'MenuGroup',
-  props: {
-    name: String,
-    endpoints: Array
-  },
+  name: 'MenuEndpoint',
+  props: ['operationId', 'method', 'path', 'summary'],
   data: () => ({
-    source: {
-      openapi: '3.0.0',
-      info: {
-        title: 'GrabX',
-        version: '1.1.0'
-      }
-    },
-    treeOptions: {
-      maxDepth: 3
-    }
   })
 }
 </script>

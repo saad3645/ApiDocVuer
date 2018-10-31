@@ -1,9 +1,9 @@
 <template>
-  <div class="api-reference-wrap">
+  <div v-if="source" class="api-reference-wrap">
     <md-toolbar md-elevation="0">
       <div class="md-toolbar-section-start">
-        <h3 class="md-title">No Elevation</h3>
-        <span class="md-subheader">Version 1</span>
+        <h3 class="md-title">{{source.info.title}}</h3>
+        <span class="md-subheader">Version {{source.info.version}}</span>
       </div>
       <div class="md-toolbar-section-end">
         <md-button class="md-dense md-primary md-icon-button">
@@ -14,7 +14,7 @@
     </md-toolbar>
     <md-content class="api-reference-container">
       <md-drawer md-permanent="clipped">
-        <MenuContent></MenuContent>
+        <MenuContent :resourceGroups="tree.resourceGroups" :resources="tree.resources"></MenuContent>
       </md-drawer>
       <md-content>
         <code>{{JSON.stringify(source)}}</code>
@@ -27,6 +27,9 @@
 import axios from 'axios'
 import MenuContent from '@/components/MenuContent'
 
+const REST_METHOD_REGEX = /^(get|post|put|patch|delete|options|head)$/
+const COLLECTION_TAG_REGEX = /^(collection:([a-zA-Z0-9._-]+))$/
+
 export default {
   name: 'ApiDoc',
   components: {MenuContent},
@@ -34,14 +37,19 @@ export default {
     docId: null,
     docName: null,
     doc: null,
-    source: null
+    source: null,
+    openapiVersion: null,
+    tree: null
   }),
 
-  created() {
+  async created() {
     this.docId = this.$route.params.docId
     this.docName = this.$route.params.docName
     this.doc = this.$route.params.doc
-    this.getOpenApi(this.docId)
+    this.source = await this.getOpenApi(this.docId)
+    // validate this source object with openapi specification
+    this.openapiVersion = this.source.openapi
+    this.tree = this.buildTree(this.source)
   },
 
   methods: {
@@ -51,13 +59,13 @@ export default {
         return
       }
 
-      const url = process.env.VUE_APP_API_BASE_URL + '/d/' + docId + '/openapi'
+      const url = process.env.VUE_APP_API_BASE_URL + '/d/' + '5bd84af251e8b664f2c4dfc8/openapi' // docId + '/openapi'
       const token = localStorage.token
       const authHeader = 'Bearer ' + token
 
       try {
         const res = await axios.get(url, {headers: {Authorization: authHeader}})
-        this.source = res.data
+        return res.data
       }
       catch (error) {
         if (error.response && error.response.data && error.response.data.errors) {
@@ -71,6 +79,59 @@ export default {
           this.snackbarMessage = error.message
         }
       }
+    },
+
+    async buildTree(source) {
+      const tree = {resources: []}
+      const resourceGroups = {}
+
+      if (source['x-tagGroups']) {
+        tree.resourceGroups = source['x-tagGroups'].map(tg => {
+          const group = Object.assign({resources: []}, tg)
+          resourceGroups[group.name] = group
+          return group
+        })
+      }
+
+      const resources = {}
+
+      if (source['tags']) {
+        source['tags'].forEach(tag => {
+          const resource = Object.assign({endpoints: []}, tag)
+          if (tag['x-tagGroup'] && resourceGroups[tag['x-tagGroup']]) {
+            resourceGroups[tag['x-tagGroup']].resources.push(resource)
+          }
+          else if (!source['x-tagGroups']) {
+            tree.resources.push(resource)
+          }
+          resources[tag.name] = resource
+        })
+      }
+
+      const paths = Object.keys(source.paths)
+      paths.forEach(path => {
+        const ops = Object.keys(path).filter(item => REST_METHOD_REGEX.test(item))
+        ops.forEach(op => {
+          const endpoint = Object.assign({path: path, method: op, summary: source.paths[path].summary, description: source.paths[path], servers: source.paths[path], operationId: (op + '-' + path.replace(/\//g, '-'))}, source.paths[path][op])
+          if (op.tags) {
+            op.tags.forEach(t => {
+              if (!COLLECTION_TAG_REGEX.test(t)) {
+                resources[t].endpoints.push(endpoint)
+              }
+            })
+          }
+          else {
+            if (!resources[path]) {
+              const resource = {name: path.replace(/\//g, '-'), title: path, endpoints: []}
+              tree.resources.push(resource)
+              resources[path] = resource
+            }
+            resources[path].endpoints.push(endpoint)
+          }
+        })
+      })
+
+      return tree
     }
   }
 }

@@ -10,15 +10,20 @@
         <span class="md-list-item-text">Authentication</span>
       </md-list-item>
     </md-list>
-    <MenuTagGroup v-for="group in tagGroups" :name="group.name" :isDefault="group.isDefault" :tags="group.tags" :key="group.key"></MenuTagGroup>
+    <MenuResourceGroup v-if="resourceGroups.length > 0" v-for="group in resourceGroups" :name="group.name" :title="group.title" :resources="group.resources" :key="group.name"></MenuResourceGroup>
+    <MenuResource v-if="resources.length > 0" v-for="resource in resources" :name="resource.name" :title="resource.title" :path="resource.path" :endpoints="resource.endpoints" :key="resource.key"></MenuResource>
   </div>
 </template>
 
 <script>
-import MenuTagGroup from '@/components/MenuTagGroup'
+import MenuResourceGroup from '@/components/MenuResourceGroup'
+import MenuResource from '@/components/MenuResource'
 export default {
   name: 'MenuContent',
-  components: {MenuTagGroup},
+  components: {MenuResourceGroup, MenuResource},
+
+  props: ['resourceGroups', 'resources', 'endpoints'],
+
   data: () => ({
     tagGroups: [
       {
