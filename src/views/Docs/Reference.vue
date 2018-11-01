@@ -25,9 +25,10 @@
 
 <script>
 import axios from 'axios'
+import MD5 from 'md5.js'
 import MenuContent from '@/components/MenuContent'
 
-const REST_METHOD_REGEX = /^(get|post|put|patch|delete|options|head)$/
+const REST_METHOD_REGEX = /^(get|post|put|patch|delete|options|head)$/i
 const COLLECTION_TAG_REGEX = /^(collection:([a-zA-Z0-9._-]+))$/
 
 export default {
@@ -81,7 +82,7 @@ export default {
       }
     },
 
-    async buildTree(source) {
+    buildTree(source) {
       const tree = {resources: []}
       const resourceGroups = {}
 
@@ -97,7 +98,7 @@ export default {
 
       if (source['tags']) {
         source['tags'].forEach(tag => {
-          const resource = Object.assign({endpoints: []}, tag)
+          const resource = Object.assign({key: new MD5().update(tag.name).digest('hex'), title: tag['x-title'], endpoints: []}, tag)
           if (tag['x-tagGroup'] && resourceGroups[tag['x-tagGroup']]) {
             resourceGroups[tag['x-tagGroup']].resources.push(resource)
           }
@@ -108,11 +109,17 @@ export default {
         })
       }
 
-      const paths = Object.keys(source.paths)
-      paths.forEach(path => {
-        const ops = Object.keys(path).filter(item => REST_METHOD_REGEX.test(item))
-        ops.forEach(op => {
-          const endpoint = Object.assign({path: path, method: op, summary: source.paths[path].summary, description: source.paths[path], servers: source.paths[path], operationId: (op + '-' + path.replace(/\//g, '-'))}, source.paths[path][op])
+      Object.keys(source.paths).forEach(path => {
+        Object.keys(source.paths[path]).filter(item => REST_METHOD_REGEX.test(item)).forEach(op => {
+          const endpoint = Object.assign(
+            {
+              path: path,
+              method: op,
+              summary: source.paths[path].summary,
+              description: source.paths[path].description,
+              servers: source.paths[path].servers,
+              operationId: (op + '-' + path.replace(/\//g, '-'))
+            }, source.paths[path][op])
           if (op.tags) {
             op.tags.forEach(t => {
               if (!COLLECTION_TAG_REGEX.test(t)) {
@@ -122,7 +129,7 @@ export default {
           }
           else {
             if (!resources[path]) {
-              const resource = {name: path.replace(/\//g, '-'), title: path, endpoints: []}
+              const resource = {key: new MD5().update(path).digest('hex'), title: path, endpoints: []}
               tree.resources.push(resource)
               resources[path] = resource
             }

@@ -1,7 +1,7 @@
 
 export default {
   methods: {
-    validateProperty(prop, value, schema, definitions, errors) {
+    validateProperty(prop, value, schema, schemaObject, errors) {
       if (typeof schema === 'string') {
         if (schema === 'boolean') {
           if (typeof value !== 'boolean') {
@@ -29,8 +29,25 @@ export default {
           }
         }
         else if (schema === 'schema') {
-          const self = this
-          self.validateProperty(prop, value, definitions.schema, errors)
+          this.validateProperty(prop, value, schemaObject, schemaObject, errors)
+        }
+      }
+      else if (typeof schema === 'object' && Array.isArray(schema) && schema.some(s => (s === 'boolean' || s === 'string' || s === 'object' || s === 'schema'))) {
+        if (typeof value === 'boolean' && !schema.some(s => s === 'boolean')) {
+          errors.push({name: 'Schema error', at: prop, detail: 'should be one of the allowed types', allowedTypes: schema})
+        }
+        else if (typeof value === 'string' && !schema.some(s => s === 'string')) {
+          errors.push({name: 'Schema error', at: prop, detail: 'should be one of the allowed types', allowedTypes: schema})
+        }
+        else if (typeof value === 'object' && Object.prototype.toString.call(value).match(/^(\[object (Object)\])$/) && !schema.some(s => s === 'object')) {
+          errors.push({name: 'Schema error', at: prop, detail: 'should be one of the allowed types', allowedTypes: schema})
+        }
+        else if (typeof value === 'object' && Object.prototype.toString.call(value).match(/^(\[object (Object)\])$/) && !schema.some(s => s === 'schema')) {
+          errors.push({name: 'Schema error', at: prop, detail: 'should be one of the allowed types', allowedTypes: schema})
+        }
+
+        if (schema.some(s => s === 'schema') && typeof value === 'object' && Object.prototype.toString.call(value).match(/^(\[object (Object)\])$/)) {
+          this.validateProperty(prop, value, schemaObject, schemaObject, errors)
         }
       }
       else if (typeof schema === 'object' && Object.prototype.toString.call(schema).match(/^(\[object (Object)\])$/)) {
@@ -90,7 +107,7 @@ export default {
 
           const self = this
           value.forEach((v, index) => {
-            self.validateProperty((prop + '[' + index + ']'), v, schema.of, definitions, errors)
+            self.validateProperty((prop + '[' + index + ']'), v, schema.of, schemaObject, errors)
           })
 
           if (schema.uniqueItems && (schema.of === 'number' || schema.of === 'string')) {
@@ -114,27 +131,55 @@ export default {
             errors.push({name: 'Schema error', at: prop, detail: 'should be an object'})
           }
           if (schema.required) {
-            schema.required.forEach(req => {
-              if (!value[req]) {
-                errors.push({name: 'Schema error', at: prop, detail: 'should have required property `' + req + '`'})
+            if (Array.isArray(schema.required)) {
+              schema.required.forEach(req => {
+                if (!value[req]) {
+                  errors.push({name: 'Schema error', at: prop, detail: 'should have required property `' + req + '`'})
+                }
+              })
+            }
+            else if (typeof schema.required === 'object' && Object.prototype.toString.call(schema.required).match(/^(\[object (Object)\])$/)) {
+              if (schema.required.anyOf) {
+                const hasAnyOf = schema.required.anyOf.some(p => typeof value[p] !== 'undefined')
+                if (!hasAnyOf) {
+                  errors.push({name: 'Schema error', at: prop, detail: 'should have at least one of the required properties', anyOfRequired: schema.required.anyOf})
+                }
               }
-            })
-          }
-          else if (schema.anyOf) {
-            const hasAnyOf = schema.anyOf.some(p => typeof value[p] !== 'undefined')
-            if (!hasAnyOf) {
-              errors.push({name: 'Schema error', at: prop, detail: 'should have any of the allowed properties', anyOf: schema.anyOf})
+              if (schema.required.pattern) {
+                if (typeof schema.required.pattern === 'string') {
+                  const hasPattern = Object.keys(value).some(p => p.match(RegExp(schema.required.pattern)))
+                  if (!hasPattern) {
+                    errors.push({name: 'Schema error', at: prop, detail: 'should have required property with expected pattern', pattern: schema.required.pattern})
+                  }
+                }
+                else if (Array.isArray(schema.required.pattern)) {
+                  const hasPattern = Object.keys(value).some(p => p.match(RegExp(schema.required.pattern[0], schema.required.pattern[1])))
+                  if (!hasPattern) {
+                    errors.push({name: 'Schema error', at: prop, detail: 'should have required property with expected pattern', pattern: schema.required.pattern})
+                  }
+                }
+              }
             }
           }
 
-          if (schema.properties && !schema.patternProperties) {
-
+          if (schema.properties) {
+            const self = this
+            Object.keys(schema.properties).forEach(p => {
+              if (value[p]) {
+                self.validateProperty((prop + '.' + p), value[p], schema.properties[p], schemaObject, errors)
+              }
+            })
           }
-          else if (schema.properties && schema.patternProperties) {
 
-          }
-          else if (!schema.properties && schema.patternProperties) {
-
+          if (schema.patternProperties) {
+            const self = this
+            Object.keys(schema.patternProperties).forEach(px => {
+              Object.keys(value).forEach(p => {
+                if (p.match(RegExp(px))) {
+                  self.validateProperty((prop + '.' + p), value[p], schema.patternProperties[px], schemaObject, errors)
+                }
+              })
+            })
           }
         }
       }

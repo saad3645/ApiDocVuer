@@ -21,7 +21,6 @@ import MenuResource from '@/components/MenuResource'
 export default {
   name: 'MenuContent',
   components: {MenuResourceGroup, MenuResource},
-
   props: ['resourceGroups', 'resources', 'endpoints'],
 
   data: () => ({

@@ -1,54 +1,6 @@
 {
   "type": "object",
   "required": ["openapi", "info", "paths"],
-  "definitions": {
-    "schema": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "type": "string",
-          "enum": ["integer", "number", "string", "boolean", "object", "array"]
-        },
-        "title": "string",
-        "multipleOf": "integer",
-        "maximum": "integer",
-        "exclusiveMaximum": "integer",
-        "minimum": "integer",
-        "exclusiveMinimum": "integer",
-        "maxLength": "integer",
-        "minLength": "integer",
-        "pattern": "string",
-        "maxItems": "integer",
-        "minItems": "integer",
-        "uniqueItems": "boolean",
-        "maxProperties": "integer",
-        "minProperties": "integer",
-        "required": {
-          "type": "array",
-          "of": "string",
-          "minItems": 1,
-          "uniqueItems": true
-        },
-        "enum": {
-          "type": "array",
-          "of": "string",
-          "minItems": 1,
-          "uniqueItems": true
-        },
-        "description": "string",
-        "format": {
-          "type": "string",
-          "enum": ["int32", "int64", "float", "double", "email", "password", "uuid", "bsonid", "base64", "binary", "date", "datetime", "date-time"]
-        },
-        "default": "boolean",
-        "nullable": "boolean",
-        "deprecated": "boolean",
-        "items": "schema",
-        "properties": "schema",
-        "additionalProperties": "schema"
-      }
-    }
-  },
   "properties": {
     "openapi": {
       "type": "string",
@@ -63,7 +15,9 @@
         "termsOfService": "string",
         "contact": {
           "type": "object",
-          "anyOf": ["name", "url", "email", "x-github"],
+          "required": {
+            "anyOf": ["name", "url", "email", "x-github"]
+          },
           "properties": {
             "name": "string",
             "url": "string",
@@ -109,158 +63,171 @@
     },
     "paths": {
       "type": "object",
-      "patternProperties": [
-        "^(\\/[a-zA-Z0-9/_~-]+)$",
-        {
-          "$type": "object",
-          "summary": "string",
-          "description": "string",
-          "servers": {
-            "$type": "array",
-            "$of": {
-              "$type": "object",
-              "$required": ["url"],
-              "url": "string",
-              "description": "string"
-            },
-            "$minItems": 1,
-            "$uniqueItems": true
+      "patternProperties": {
+        "^(\\/[a-zA-Z0-9/_~-]+)$": {
+          "type": "object",
+          "required": {
+            "pattern": ["^(get|post|put|patch|delete|options|head)$", "i"]
           },
-          "$patternProperties": [
-            "^(get|post|put|patch|delete|options|head)$",
-            {
-              "$type": "object",
-              "$required": ["responses"],
-              "tags": {
-                "$type": "array",
-                "$of": "string",
-                "$minItems": 1,
-                "$uniqueItems": true
-              },
-              "summary": "string",
-              "description": "string",
-              "operationId": "string",
-              "deprecated": ["boolean", false],
-              "parameters": {
-                "$type": "array",
-                "$of": {
-                  "$type": "object",
-                  "$required": ["name", "in"],
-                  "name": "string",
-                  "in": {
-                    "$type": "string",
-                    "$enum": ["query", "header", "path", "cookie"]
-                  },
-                  "description": "string",
-                  "required": ["boolean", false],
-                  "deprecated": ["boolean", false],
-                  "explode": ["boolean", false],
-                  "schema": "schema"
-                },
-                "$minItems": 1,
-                "$uniqueItems": true
-              },
-              "requestBody": {
-                "$type": "object",
-                "$required": ["content"],
-                "description": "string",
-                "content": {
-                  "$type": "object",
-                  "$patternProperties": [
-                    "^([a-zA-Z0-9+/_-]+)$",
-                    {
-                      "$type": "object",
-                      "schema": "schema"
-                    }
-                  ]
-                },
-                "required": ["boolean", false]
-              },
-              "responses": {
-                "$type": "object",
-                "$patternProperties": [
-                  "^([1-5]([0-9]{2}|[xX]{2}))$",
-                  {
-                    "$type": "object",
-                    "description": "string",
-                    "headers": {
-                      "$type": "object",
-                      "$patternProperties": [
-                        "^([a-zA-Z0-9-]+)$",
-                        {
-                          "description": "string",
-                          "required": ["boolean", false],
-                          "deprecated": ["boolean", false],
-                          "explode": ["boolean", false],
-                          "schema": "schema"
-                        }
-                      ]
-                    },
-                    "content": {
-                      "$type": "object",
-                      "$patternProperties": [
-                        "^([a-zA-Z0-9+/_-]+)$",
-                        {
-                          "$type": "object",
-                          "schema": "schema"
-                        }
-                      ]
-                    }
-                  }
-                ]
-              },
-              "servers": {
-                "$type": "array",
-                "$of": {
-                  "$type": "object",
-                  "$required": ["url"],
+          "properties": {
+            "summary": "string",
+            "description": "string",
+            "servers": {
+              "type": "array",
+              "of": {
+                "type": "object",
+                "required": ["url"],
+                "properties": {
                   "url": "string",
                   "description": "string"
-                },
-                "$minItems": 1,
-                "$uniqueItems": true
+                }
               },
-              "x-collections": {
-                "$type": "array",
-                "$of": "string",
-                "$minItems": 1,
-                "$uniqueItems": true
+              "minItems": 1,
+              "uniqueItems": true
+            }
+          },
+          "patternProperties": {
+            "^(get|post|put|patch|delete|options|head)$": {
+              "type": "object",
+              "required": ["responses"],
+              "properties": {
+                "tags": {
+                  "type": "array",
+                  "of": "string",
+                  "minItems": 1,
+                  "uniqueItems": true
+                },
+                "summary": "string",
+                "description": "string",
+                "operationId": "string",
+                "deprecated": "boolean",
+                "parameters": {
+                  "type": "array",
+                  "of": {
+                    "type": "object",
+                    "required": ["name", "in"],
+                    "properties": {
+                      "name": "string",
+                      "in": {
+                        "type": "string",
+                        "enum": ["query", "header", "path", "cookie"]
+                      },
+                      "description": "string",
+                      "required": ["boolean", false],
+                      "deprecated": ["boolean", false],
+                      "explode": ["boolean", false],
+                      "schema": "schema"
+                    }
+                  },
+                  "minItems": 1,
+                  "uniqueItems": true
+                },
+                "requestBody": {
+                  "type": "object",
+                  "required": ["content"],
+                  "properties": {
+                    "description": "string",
+                    "content": {
+                      "type": "object",
+                      "patternProperties": {
+                        "^([a-zA-Z0-9+/_-]+)$": {
+                          "type": "object",
+                          "properties": {
+                            "schema": "schema",
+                            "example": "any"
+                          }
+                        }
+                      }
+                    },
+                    "required": "boolean"
+                  }
+                },
+                "responses": {
+                  "type": "object",
+                  "patternProperties": {
+                    "^([1-5]([0-9]{2}|[xX]{2}))$": {
+                      "type": "object",
+                      "required": ["description"],
+                      "properties": {
+                        "description": "string",
+                        "headers": {
+                          "type": "object",
+                          "patternProperties": {
+                            "^([a-zA-Z0-9_-]+)$": {
+                              "type": "object",
+                              "properties": {
+                                "description": "string",
+                                "required": "boolean",
+                                "deprecated": "boolean",
+                                "explode": "boolean",
+                                "schema": "schema"
+                              }
+                            }
+                          }
+                        },
+                        "content": {
+                          "type": "object",
+                          "patternProperties": {
+                            "^([a-zA-Z0-9+/_-]+)$": {
+                              "type": "object",
+                              "properties": {
+                                "schema": "schema",
+                                "example": "any"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "servers": {
+                  "type": "array",
+                  "of": {
+                    "type": "object",
+                    "required": ["url"],
+                    "properties": {
+                      "url": "string",
+                      "description": "string"
+                    }
+                  },
+                  "minItems": 1,
+                  "uniqueItems": true
+                }
               }
             }
-          ]
+          }
         }
-      ]
+      }
     },
     "tags": {
-      "$type": "array",
-      "$of": {
-        "$type": "object",
-        "$required": ["name"],
-        "name": "string",
-        "description": "string",
-        "x-title": "string",
-        "x-tagGroup": "string"
+      "type": "array",
+      "of": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": "string",
+          "description": "string",
+          "x-title": "string",
+          "x-tagGroup": "string"
+        }
       },
-      "$minItems": 1,
-      "$uniqueItems": true
+      "minItems": 1,
+      "uniqueItems": true
     },
     "x-tagGroups": {
-      "$type": "array",
-      "$of": {
-        "$type": "object",
-        "$required": ["name"],
-        "name": "string",
-        "title": "string",
-        "description": "string"
+      "type": "array",
+      "of": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": "string",
+          "title": "string",
+          "description": "string"
+        }
       },
-      "$minItems": 1,
-      "$uniqueItems": true
-    },
-    "x-defaultTagGroup": {
-      "$type": "object",
-      "$required": ["title"],
-      "title": "string",
-      "description": "string"
+      "minItems": 1,
+      "uniqueItems": true
     }
   }
 }
