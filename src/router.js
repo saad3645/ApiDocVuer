@@ -42,12 +42,12 @@ export default new Router({
           beforeEnter: authenticate
         },
         {
-          path: ':docName/collections',
+          path: ':doc/collections',
           name: 'Collections',
           component: () => import(/* webpackChunkName: "collections" */ './views/Docs/Collections.vue')
         },
         {
-          path: ':docName/:collectionId/reference',
+          path: ':doc/:collection/reference',
           name: 'Reference',
           component: () => import(/* webpackChunkName: "reference" */ './views/Docs/Reference.vue')
         }

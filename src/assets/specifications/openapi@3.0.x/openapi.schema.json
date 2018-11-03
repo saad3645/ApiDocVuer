@@ -15,9 +15,7 @@
         "termsOfService": "string",
         "contact": {
           "type": "object",
-          "required": {
-            "anyOf": ["name", "url", "email", "x-github"]
-          },
+          "requiredAnyOf": ["name", "url", "email", "x-github"],
           "properties": {
             "name": "string",
             "url": "string",
@@ -59,16 +57,14 @@
         }
       },
       "minItems": 1,
-      "uniqueItems": true
+      "uniqueItems": ["url"]
     },
     "paths": {
       "type": "object",
       "patternProperties": {
         "^(\\/[a-zA-Z0-9/_~-]+)$": {
           "type": "object",
-          "required": {
-            "pattern": ["^(get|post|put|patch|delete|options|head)$", "i"]
-          },
+          "requiredPattern": ["^(get|post|put|patch|delete|options|head)$", "i"],
           "properties": {
             "summary": "string",
             "description": "string",
@@ -83,7 +79,7 @@
                 }
               },
               "minItems": 1,
-              "uniqueItems": true
+              "uniqueItems": ["url"]
             }
           },
           "patternProperties": {
@@ -120,7 +116,7 @@
                     }
                   },
                   "minItems": 1,
-                  "uniqueItems": true
+                  "uniqueItems": ["name", "in"]
                 },
                 "requestBody": {
                   "type": "object",
@@ -145,7 +141,7 @@
                 "responses": {
                   "type": "object",
                   "patternProperties": {
-                    "^([1-5]([0-9]{2}|[xX]{2}))$": {
+                    "^([1-5]([0-9]{2}|[XX]{2}|[xx]{2}))$": {
                       "type": "object",
                       "required": ["description"],
                       "properties": {
@@ -192,7 +188,7 @@
                     }
                   },
                   "minItems": 1,
-                  "uniqueItems": true
+                  "uniqueItems": ["url"]
                 }
               }
             }
@@ -206,28 +202,54 @@
         "type": "object",
         "required": ["name"],
         "properties": {
-          "name": "string",
+          "name": {
+            "type": "string",
+            "pattern": "^([a-zA-Z0-9./_-]+)$"
+          },
           "description": "string",
           "x-title": "string",
           "x-tagGroup": "string"
         }
       },
       "minItems": 1,
-      "uniqueItems": true
+      "uniqueItems": ["name"]
     },
     "x-tagGroups": {
       "type": "array",
       "of": {
         "type": "object",
-        "required": ["name"],
+        "required": ["name", "tags"],
         "properties": {
           "name": "string",
           "title": "string",
-          "description": "string"
+          "description": "string",
+          "tags": {
+            "type": "array",
+            "of": {
+              "type": "object",
+              "required": ["name"],
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "pattern": "^([a-zA-Z0-9./_-]+)$"
+                },
+                "description": "string",
+                "x-title": "string"
+              }
+            },
+            "minItems": 1,
+            "uniqueItems": ["name"]
+          }
         }
       },
       "minItems": 1,
-      "uniqueItems": true
+      "uniqueItems": ["name"]
+    },
+    "x-menuRoot": {
+      "type": "object",
+      "properties": {
+        "title": "string"
+      }
     }
   }
 }

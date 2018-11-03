@@ -37,6 +37,7 @@
     "default": "any",
     "nullable": "boolean",
     "deprecated": "boolean",
+    "of": "schema",
     "items": "schema",
     "properties": "schema",
     "additionalProperties": ["boolean", "schema"]

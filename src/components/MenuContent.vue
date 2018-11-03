@@ -10,67 +10,20 @@
         <span class="md-list-item-text">Authentication</span>
       </md-list-item>
     </md-list>
-    <MenuResourceGroup v-if="resourceGroups.length > 0" v-for="group in resourceGroups" :name="group.name" :title="group.title" :resources="group.resources" :key="group.name"></MenuResourceGroup>
-    <MenuResource v-if="resources.length > 0" v-for="resource in resources" :name="resource.name" :title="resource.title" :path="resource.path" :endpoints="resource.endpoints" :key="resource.key"></MenuResource>
+    <MenuResourceGroup v-for="group in tree" :name="group.name" :title="group.title || group.menuTitle" :resources="group.resources" :key="group.key"></MenuResourceGroup>
   </div>
 </template>
 
 <script>
 import MenuResourceGroup from '@/components/MenuResourceGroup'
-import MenuResource from '@/components/MenuResource'
 export default {
   name: 'MenuContent',
-  components: {MenuResourceGroup, MenuResource},
-  props: ['resourceGroups', 'resources', 'endpoints'],
+  components: {MenuResourceGroup},
+  props: ['tree'],
 
-  data: () => ({
-    tagGroups: [
-      {
-        key: 'group/users',
-        name: 'Users',
-        tags: [
-          {
-            name: 'Users',
-            endpoints: [
-              {method: 'GET', path: '/users'},
-              {method: 'POST', path: '/users'},
-              {method: 'PATCH', path: '/users'}
-            ]
-          }
-        ]
-      },
-      {
-        key: 'group/admins',
-        name: 'Admins',
-        tags: [
-          {
-            name: 'Super Admins',
-            endpoints: [
-              {method: 'get', path: '/superadmins'},
-              {method: 'delete', path: '/superadmins'}
-            ]
-          },
-          {
-            name: 'Admins',
-            endpoints: [
-              {method: 'get', path: '/admins'},
-              {method: 'post', path: '/admins'},
-              {method: 'patch', path: '/admins'}
-            ]
-          }
-        ]
-      },
-      {
-        key: 'group/~default',
-        name: '',
-        isDefault: true,
-        tags: [{name: '7'}, {name: '8'}, {name: '9'}]
-      }
-    ],
-    treeOptions: {
-      maxDepth: 3
-    }
-  })
+  created() {
+    // console.log(this.tree)
+  }
 }
 </script>
 

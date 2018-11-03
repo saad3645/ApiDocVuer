@@ -87,7 +87,6 @@ export default {
         localStorage.setItem('user', this.form.username)
         localStorage.setItem('token', res.data.token)
         this.$router.push({path: '/docs'})
-        // window.location = ('http://google.com?user=' + this.form.username + '&token=' + res.data.token) // ('http://localhost:3000/c/sales?user=' + this.form.username + '&token=' + res.data.token)
       }
       catch (error) {
         if (error.response && error.response.data && error.response.data.errors) {
@@ -102,7 +101,6 @@ export default {
         }
         this.showSnackbar = true
       }
-      // window.location = 'https://rebilly.github.io/ReDoc/'
     },
 
     validateUser() {

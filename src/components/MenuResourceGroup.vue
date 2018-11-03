@@ -1,12 +1,10 @@
 <template>
-  <div class="menu-group">
-    <md-list :md-expand-single="true">
-      <md-list-item>
-        <span class="md-list-item-text">{{title || name}}</span>
-      </md-list-item>
-      <MenuResource v-for="resource in resources" :name="resource.name" :title="resource.title" :path="resource.path" :endpoints="resource.endpoints" :key="resource.key"></MenuResource>
-    </md-list>
-  </div>
+  <md-list md-expand-single class="menu-group">
+    <md-list-item v-if="title || name">
+      <span class="md-list-item-text">{{displayName}}</span>
+    </md-list-item>
+    <MenuResource v-for="resource in resources" :name="resource.name" :title="resource.title" :path="resource.path" :endpoints="resource.endpoints" :key="resource.key"></MenuResource>
+  </md-list>
 </template>
 
 <script>
@@ -15,8 +13,19 @@ export default {
   name: 'MenuResourceGroup',
   components: {MenuResource},
   props: ['name', 'title', 'resources'],
+
   data: () => ({
-  })
+  }),
+
+  created() {
+    // console.log(this.resources)
+  },
+
+  computed: {
+    displayName() {
+      return (this.title || this.name)
+    }
+  }
 }
 </script>
 

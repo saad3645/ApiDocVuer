@@ -110,18 +110,34 @@ export default {
             self.validateProperty((prop + '[' + index + ']'), v, schema.of, schemaObject, errors)
           })
 
-          if (schema.uniqueItems && (schema.of === 'number' || schema.of === 'string')) {
-            const u = {}
-            const hasUnique = value.every(v => {
-              const vk = v.toString()
-              if (u[vk]) {
-                return false
-              }
-              else {
-                u[vk] = true
-              }
-            })
-            if (!hasUnique) {
+          if (schema.uniqueItems) {
+            const unique = {}
+            const q = {}
+            if (typeof schema.uniqueItems === 'boolean') {
+              q.hasUnique = value.every(item => {
+                const v = item.toString()
+                if (unique[v]) {
+                  return false
+                }
+                else {
+                  unique[v] = true
+                  return true
+                }
+              })
+            }
+            else if (Array.isArray(schema.uniqueItems)) {
+              q.hasUnique = value.every(item => {
+                const v = schema.uniqueItems.map(uk => item[uk].toString()).join('')
+                if (unique[v]) {
+                  return false
+                }
+                else {
+                  unique[v] = true
+                  return true
+                }
+              })
+            }
+            if (!q.hasUnique) {
               errors.push({name: 'Schema error', at: prop, detail: 'should contain unique items'})
             }
           }
