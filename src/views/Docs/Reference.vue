@@ -25,7 +25,7 @@
 
 <script>
 // import axios from 'axios'
-import MenuContent from '@/components/MenuContent'
+import MenuContent from '@/components/Menu/MenuContent'
 
 const REST_METHOD_REGEX = /^(get|post|put|patch|delete|options|head)$/i
 

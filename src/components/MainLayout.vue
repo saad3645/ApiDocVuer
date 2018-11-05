@@ -1,7 +1,7 @@
 <template>
-  <div class="app-root">
+  <div class="app-main-layout">
     <md-app md-mode="reveal">
-      <NavbarContent slot="md-app-toolbar"></NavbarContent>
+      <Navbar slot="md-app-toolbar"></Navbar>
       <md-app-content>
         <router-view/>
       </md-app-content>
@@ -10,10 +10,10 @@
 </template>
 
 <script>
-import NavbarContent from '@/components/NavbarContent'
+import Navbar from '@/components/Navbar'
 export default {
-  name: 'DocsRoot',
-  components: {NavbarContent}
+  name: 'MainLayout',
+  components: {Navbar}
 }
 </script>
 

@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import MenuResource from '@/components/MenuResource'
+import MenuResource from '@/components/Menu/MenuResource'
 export default {
   name: 'MenuResourceGroup',
   components: {MenuResource},

@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import MenuEndpoint from '@/components/MenuEndpoint'
+import MenuEndpoint from '@/components/Menu/MenuEndpoint'
 export default {
   name: 'MenuResource',
   components: {MenuEndpoint},

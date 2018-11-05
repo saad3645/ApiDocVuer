@@ -13,7 +13,7 @@
 
 <script>
 export default {
-  name: 'NavbarContent',
+  name: 'Navbar',
   data: () => ({
     user: null
   }),

@@ -20,10 +20,8 @@
                   <md-input type="password" name="password" id="password" v-model="form.password" :disabled="sending" />
                   <span class="md-error" v-if="!$v.form.password.required">Password is required</span>
                 </md-field>
+                <md-progress-bar md-mode="indeterminate" v-if="sending" />
               </md-card-content>
-
-              <md-progress-bar md-mode="indeterminate" v-if="sending" />
-
               <md-card-actions class="md-layout md-alignment-center">
                 <md-button type="submit" class="md-raised md-primary" :disabled="sending">Login</md-button>
               </md-card-actions>
@@ -34,7 +32,7 @@
         </div>
         <md-snackbar :md-active.sync="showSnackbar">
           <span>{{snackbarMessage}}</span>
-          <md-button class="md-primary" @click="showSnackbar = false">Retry</md-button>
+          <md-button class="md-primary" @click="!showSnackbar">Dismiss</md-button>
         </md-snackbar>
       </md-app-content>
     </md-app>
@@ -46,7 +44,7 @@ import {validationMixin} from 'vuelidate'
 import {required} from 'vuelidate/lib/validators'
 import axios from 'axios'
 
-const LOGIN_URL = process.env.VUE_APP_API_BASE_URL + '/login'
+const LOGIN_URL = process.env.VUE_APP_API_BASE_URL + 'login'
 
 export default {
   name: 'Login',
@@ -83,12 +81,16 @@ export default {
 
     async login() {
       try {
+        this.sending = true
         const res = await axios.post(LOGIN_URL, this.form)
         localStorage.setItem('user', this.form.username)
         localStorage.setItem('token', res.data.token)
-        this.$router.push({path: '/docs'})
+        localStorage.setItem('token_expires_at', (Math.floor(Date.now() / 1000) + res.data.ttl - 30))
+        this.sending = false
+        this.$router.push({path: '/apps'})
       }
       catch (error) {
+        this.sending = false
         if (error.response && error.response.data && error.response.data.errors) {
           if (error.response.status !== 401 && error.response.status !== 403) {
             console.log('Error', error.response.data.errors)

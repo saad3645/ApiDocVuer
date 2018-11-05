@@ -4,11 +4,14 @@ import Router from 'vue-router'
 Vue.use(Router)
 
 const authenticate = function(to, from, next) {
-  if (!localStorage.user || !localStorage.token) {
+  if (!localStorage.user || !localStorage.token || !localStorage.token_expires_at || Math.ceil(Date.now() / 1000) >= localStorage.token_expires_at) {
     next({path: '/login'})
   }
   else if (to.name === 'Default') {
-    next({path: '/docs'})
+    next({path: '/apps'})
+  }
+  else if (to.name === 'NoMatch') {
+    next({path: '/apps'})
   }
   else {
     next()
@@ -20,36 +23,43 @@ export default new Router({
   base: process.env.BASE_URL,
   routes: [
     {
-      path: '/',
-      name: 'Default',
-      component: () => import(/* webpackChunkName: "default" */ './views/Default.vue'),
-      beforeEnter: authenticate
-    },
-    {
       path: '/login',
       name: 'Login',
       component: () => import(/* webpackChunkName: "login" */ './views/Login.vue')
     },
     {
-      path: '/docs',
-      component: () => import(/* webpackChunkName: "apidocsroot" */ './views/Docs/Root.vue'),
+      path: '/apps',
+      component: () => import(/* webpackChunkName: "apps_root" */ './components/MainLayout.vue'),
       beforeEnter: authenticate,
       children: [
         {
           path: '',
-          name: 'Docs',
-          component: () => import(/* webpackChunkName: "apidocs" */ './views/Docs/Index.vue'),
+          name: 'Apps',
+          component: () => import(/* webpackChunkName: "apps" */ './views/Apps/Index.vue'),
           beforeEnter: authenticate
         },
         {
-          path: ':doc/collections',
-          name: 'Collections',
-          component: () => import(/* webpackChunkName: "collections" */ './views/Docs/Collections.vue')
+          path: ':appId/docs',
+          name: 'AppDocs',
+          component: () => import(/* webpackChunkName: "docs" */ './views/Apps/Docs.vue'),
+          beforeEnter: authenticate
+        }
+      ]
+    },
+    {
+      path: '/docs',
+      component: () => import(/* webpackChunkName: "docs_root" */ './components/MainLayout.vue'),
+      beforeEnter: authenticate,
+      children: [
+        {
+          path: ':appId/:version/:docId/overview',
+          name: 'Overview',
+          component: () => import(/* webpackChunkName: "doc_overview" */ './views/Docs/Overview.vue')
         },
         {
-          path: ':doc/:collection/reference',
+          path: ':appId/:version/:docId/reference',
           name: 'Reference',
-          component: () => import(/* webpackChunkName: "reference" */ './views/Docs/Reference.vue')
+          component: () => import(/* webpackChunkName: "doc_reference" */ './views/Docs/Reference.vue')
         }
       ]
     },
@@ -60,6 +70,18 @@ export default new Router({
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
       component: () => import(/* webpackChunkName: "about" */ './views/About.vue')
+    },
+    {
+      path: '/',
+      name: 'Default',
+      component: () => import(/* webpackChunkName: "default" */ './views/Default.vue'),
+      beforeEnter: authenticate
+    },
+    {
+      path: '/:foo+',
+      name: 'NoMatch',
+      component: () => import(/* webpackChunkName: "nomatch" */ './views/Default.vue'),
+      beforeEnter: authenticate
     }
   ]
 })

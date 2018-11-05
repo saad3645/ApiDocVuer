@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import MenuResourceGroup from '@/components/MenuResourceGroup'
+import MenuResourceGroup from '@/components/Menu/MenuResourceGroup'
 export default {
   name: 'MenuContent',
   components: {MenuResourceGroup},
