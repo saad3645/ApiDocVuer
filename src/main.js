@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
-import {MdApp, MdButton, MdCard, MdContent, MdDrawer, MdField, MdIcon, MdList, MdMenu, MdProgress, MdRipple, MdSnackbar, MdTable, MdTabs, MdToolbar} from 'vue-material/dist/components'
+import {MdApp, MdButton, MdCard, MdContent, MdDrawer, MdField, MdIcon, MdList, MdMenu, MdProgress, MdRipple, MdSnackbar, MdTable, MdTabs, MdToolbar, MdTooltip} from 'vue-material/dist/components'
 import 'vue-material/dist/vue-material.min.css'
 import 'vue-material/dist/theme/default.css'
 
@@ -20,6 +20,7 @@ Vue.use(MdSnackbar)
 Vue.use(MdTable)
 Vue.use(MdTabs)
 Vue.use(MdToolbar)
+Vue.use(MdTooltip)
 
 Vue.config.productionTip = false
 

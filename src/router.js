@@ -52,12 +52,12 @@ export default new Router({
       beforeEnter: authenticate,
       children: [
         {
-          path: ':appId/:version/:docId/overview',
+          path: ':appId/:docId/:version/overview',
           name: 'Overview',
           component: () => import(/* webpackChunkName: "doc_overview" */ './views/Docs/Overview.vue')
         },
         {
-          path: ':appId/:version/:docId/reference',
+          path: ':appId/:docId/:version/reference',
           name: 'Reference',
           component: () => import(/* webpackChunkName: "doc_reference" */ './views/Docs/Reference.vue')
         }

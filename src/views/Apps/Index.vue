@@ -1,29 +1,31 @@
 <template>
-  <div class="app-list md-layout md-alignment-center-center">
-    <div v-if="apps" class="md-layout-item md-size-70 md-small-size-90 md-xsmall-size-100">
-      <h1 class="md-display-4">Applications</h1>
-      <div class="md-layout md-alignment-center-center">
-        <md-card v-for="app in apps" :key="app.name" md-with-hover class="md-layout-item">
-          <md-card-header>
-            <div class="md-title">{{app.title}}</div>
-          </md-card-header>
-          <md-card-content>
-            {{app.description}}
-          </md-card-content>
-          <md-card-actions>
-            <md-menu v-if="selectedVersion[app.name]" md-size="small" md-align-trigger>
-              <md-button md-menu-trigger>Version {{selectedVersion[app.name]}}</md-button>
-              <md-menu-content>
-                <md-menu-item v-for="version in app.versions" :key="version" @click="selectedVersion[app.name] = version">{{version}}</md-menu-item>
-                <!-- <md-menu-item>My Item 2</md-menu-item>
-                <md-menu-item>My Item 3</md-menu-item> -->
-              </md-menu-content>
-            </md-menu>
-            <md-button class="md-icon-button" :disabled="!selectedVersion[app.name]" @click="getCollections(app)">
-              <md-icon>code</md-icon>
-            </md-button>
-          </md-card-actions>
-        </md-card>
+  <div>
+    <md-progress-bar md-mode="indeterminate" v-if="loading" />
+    <div class="app-list md-layout md-alignment-center-center">
+      <div v-if="apps" class="md-layout-item md-size-70 md-small-size-90 md-xsmall-size-100">
+        <h1 class="md-display-4">Applications</h1>
+        <div class="md-layout md-alignment-center-center">
+          <md-card v-for="app in apps" :key="app.name" md-with-hover class="md-layout-item">
+            <md-card-header>
+              <div class="md-title">{{app.title}}</div>
+            </md-card-header>
+            <md-card-content>
+              {{app.description}}
+            </md-card-content>
+            <md-card-actions>
+              <md-menu v-if="selectedVersion[app.name]" md-size="small" md-align-trigger>
+                <md-button md-menu-trigger>Version {{selectedVersion[app.name]}}</md-button>
+                <md-menu-content>
+                  <md-menu-item v-for="version in app.versions" :key="version" @click="setSelectedVersion(app.name, version)">{{version}}</md-menu-item>
+                </md-menu-content>
+              </md-menu>
+              <md-button v-if="selectedVersion[app.name]" class="md-icon-button" :to="{name: 'AppDocs', params: {appId: app.name, version: selectedVersion[app.name]}}">
+                <md-icon>arrow_forward_ios</md-icon>
+              </md-button>
+              <md-button v-if="!selectedVersion[app.name]" class="md-dense" disabled>No Version Available</md-button>
+            </md-card-actions>
+          </md-card>
+        </div>
       </div>
     </div>
     <md-snackbar :md-active.sync="showSnackbar">
@@ -36,7 +38,7 @@
 <script>
 import axios from 'axios'
 export default {
-  name: 'apps',
+  name: 'Apps',
 
   data: () => ({
     apps: null,
@@ -57,6 +59,10 @@ export default {
   },
 
   methods: {
+    setSelectedVersion(appName, version) {
+      this.selectedVersion[appName] = version
+    },
+
     async getAppList() {
       if (!localStorage.token || !localStorage.token_expires_at || Math.ceil(Date.now() / 1000) >= localStorage.token_expires_at) {
         this.$router.push({name: 'Login'})
@@ -108,6 +114,11 @@ export default {
   .md-card {
     min-width: 240px;
     max-width: 300px;
+    min-height: 200px;
     margin-bottom: 16px;
+  }
+
+  .md-card .md-card-content {
+    min-height: 72px;
   }
 </style>
