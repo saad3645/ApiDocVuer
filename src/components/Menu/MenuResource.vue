@@ -30,4 +30,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+  .md-list {
+    padding-top: 0px;
+  }
 </style>

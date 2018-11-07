@@ -30,7 +30,9 @@
           <MenuContent :tree="tree"></MenuContent>
         </md-drawer>
         <md-content>
-          <code>{{JSON.stringify(openapi)}}</code>
+          <div class="api-content">
+            <code>{{JSON.stringify(openapi)}}</code>
+          </div>
         </md-content>
       </md-content>
     </div>
@@ -189,8 +191,15 @@ export default {
   .api-reference-container {
     display: inline-flex;
   }
+
   .md-drawer {
     min-width: 250px;
     max-width: 250px;
+  }
+
+  .api-content {
+    border-left-style: solid;
+    border-left-width: 1px;
+    border-left-color: rgba(0,0,0,0.12);
   }
 </style>
