@@ -13,16 +13,16 @@
               {{app.description}}
             </md-card-content>
             <md-card-actions>
-              <md-menu v-if="selectedVersion[app.name]" md-size="small" md-align-trigger>
-                <md-button md-menu-trigger>Version {{selectedVersion[app.name]}}</md-button>
+              <md-menu v-if="app.docs" md-size="small" md-align-trigger>
+                <md-button md-menu-trigger class="md-icon-button">
+                  <md-icon>arrow_drop_down</md-icon>
+                </md-button>
                 <md-menu-content>
-                  <md-menu-item v-for="version in app.versions" :key="version" @click="setSelectedVersion(app.name, version)">{{version}}</md-menu-item>
+                  <md-menu-item v-for="doc in app.docs" :key="doc" @click="selectDoc(app.name, doc)">{{doc}}</md-menu-item>
                 </md-menu-content>
               </md-menu>
-              <md-button v-if="selectedVersion[app.name]" class="md-icon-button" :to="{name: 'AppDocs', params: {appId: app.name, version: selectedVersion[app.name]}}">
-                <md-icon>arrow_forward_ios</md-icon>
-              </md-button>
-              <md-button v-if="!selectedVersion[app.name]" class="md-dense" disabled>No Version Available</md-button>
+              <md-button v-if="app.docs" :to="{name: 'Reference', params: {appId: app.name, docId: selectedDoc[app.name], version: selectedVersion[app.name]}}">View</md-button>
+              <md-button v-if="!app.docs" class="md-dense" disabled>No Doc Available</md-button>
             </md-card-actions>
           </md-card>
         </div>
