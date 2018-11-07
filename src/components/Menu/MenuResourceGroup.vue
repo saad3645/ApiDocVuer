@@ -3,7 +3,7 @@
     <md-list-item v-if="title || name">
       <span class="md-list-item-text">{{displayName}}</span>
     </md-list-item>
-    <MenuResource v-for="resource in resources" :name="resource.name" :title="resource.title" :path="resource.path" :endpoints="resource.endpoints" :key="resource.key"></MenuResource>
+    <MenuResource v-for="resource in resources" :name="resource.name" :title="resource.title || resource['x-title']" :path="resource.path" :endpoints="resource.endpoints" :key="resource.key"></MenuResource>
   </md-list>
 </template>
 

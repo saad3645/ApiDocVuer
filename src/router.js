@@ -37,12 +37,6 @@ export default new Router({
           name: 'Apps',
           component: () => import(/* webpackChunkName: "apps" */ './views/Apps/Index.vue'),
           beforeEnter: authenticate
-        },
-        {
-          path: ':appId/docs',
-          name: 'AppDocs',
-          component: () => import(/* webpackChunkName: "docs" */ './views/Apps/Docs.vue'),
-          beforeEnter: authenticate
         }
       ]
     },

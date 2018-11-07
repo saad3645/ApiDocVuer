@@ -14,14 +14,23 @@
             </md-card-content>
             <md-card-actions>
               <md-menu v-if="app.docs" md-size="small" md-align-trigger>
-                <md-button md-menu-trigger class="md-icon-button">
-                  <md-icon>arrow_drop_down</md-icon>
-                </md-button>
+                <md-button class="md-primary" md-menu-trigger>{{selectedDoc[app.name]}}</md-button>
+                <md-tooltip md-direction="top">Select Document</md-tooltip>
                 <md-menu-content>
                   <md-menu-item v-for="doc in app.docs" :key="doc" @click="selectDoc(app.name, doc)">{{doc}}</md-menu-item>
                 </md-menu-content>
               </md-menu>
-              <md-button v-if="app.docs" :to="{name: 'Reference', params: {appId: app.name, docId: selectedDoc[app.name], version: selectedVersion[app.name]}}">View</md-button>
+              <md-menu v-if="app.docs && selectedDoc[app.name]" md-size="small" md-align-trigger>
+                <md-button class="md-accent" md-menu-trigger>v {{selectedVersion[app.name]}}</md-button>
+                <md-tooltip md-direction="top">Select Version</md-tooltip>
+                <md-menu-content>
+                  <md-menu-item v-for="version in app['@' + selectedDoc[app.name]]" :key="version" @click="selectVersion(app.name, version)">{{version}}</md-menu-item>
+                </md-menu-content>
+              </md-menu>
+              <md-button v-if="app.docs && selectedDoc[app.name] && selectedVersion[app.name]" class="md-icon-button" :to="{name: 'Reference', params: {appId: app.name, docId: selectedDoc[app.name], version: selectedVersion[app.name], docs: app.docs, docVersions: docVersions[app.name]}}">
+                <md-icon>explore</md-icon>
+                <md-tooltip>View Api Reference</md-tooltip>
+              </md-button>
               <md-button v-if="!app.docs" class="md-dense" disabled>No Doc Available</md-button>
             </md-card-actions>
           </md-card>
@@ -42,6 +51,8 @@ export default {
 
   data: () => ({
     apps: null,
+    docVersions: null,
+    selectedDoc: null,
     selectedVersion: null,
     loading: false,
     snackbarMessage: null,
@@ -50,16 +61,42 @@ export default {
 
   async created() {
     this.apps = await this.getAppList()
+
+    this.docVersions = this.apps.reduce((result, app) => {
+      if (app.docs) {
+        result[app.name] = app.docs.reduce((sub, doc) => {
+          if (app['@' + doc]) {
+            sub[doc] = app['@' + doc]
+          }
+          return sub
+        }, {})
+      }
+      return result
+    }, {})
+
+    this.selectedDoc = this.apps.reduce((result, app) => {
+      if (app.docs && app.docs.length > 0) {
+        result[app.name] = app.docs[0]
+      }
+      return result
+    }, {})
+
+    const self = this
     this.selectedVersion = this.apps.reduce((result, app) => {
-      if (app.versions && app.versions.length > 0) {
-        result[app.name] = app.versions[0]
+      if (self.selectedDoc[app.name]) {
+        result[app.name] = app['@' + self.selectedDoc[app.name]][0]
       }
       return result
     }, {})
   },
 
   methods: {
-    setSelectedVersion(appName, version) {
+    selectDoc(appName, doc) {
+      this.selectedDoc[appName] = doc
+      this.selectedVersion[appName] = this.docVersions[appName][doc][0]
+    },
+
+    selectVersion(appName, version) {
       this.selectedVersion[appName] = version
     },
 
@@ -113,7 +150,7 @@ export default {
 
   .md-card {
     min-width: 240px;
-    max-width: 300px;
+    max-width: 350px;
     min-height: 200px;
     margin-bottom: 16px;
   }

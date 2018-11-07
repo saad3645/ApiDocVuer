@@ -5,7 +5,18 @@
       <md-toolbar md-elevation="0">
         <div class="md-toolbar-section-start">
           <h3 class="md-title">{{openapi.info.title}}</h3>
-          <span class="md-subheader">Version {{openapi.info.version}}</span>
+          <md-menu md-size="medium" md-align-trigger>
+            <md-button class="md-accent" md-menu-trigger>{{openapi.info['x-subtitle']}}</md-button>
+            <md-menu-content>
+              <md-menu-item v-for="doc in docs" :key="doc">{{doc}}</md-menu-item>
+            </md-menu-content>
+          </md-menu>
+          <md-menu md-size="medium" md-align-trigger>
+            <md-button class="md-accent" md-menu-trigger>v {{openapi.info.version}}</md-button>
+            <md-menu-content>
+              <md-menu-item v-for="version in docVersions[docId]" :key="version">{{version}}</md-menu-item>
+            </md-menu-content>
+          </md-menu>
         </div>
         <div class="md-toolbar-section-end">
           <md-button class="md-dense md-primary md-icon-button">
@@ -39,6 +50,8 @@ export default {
     appId: null,
     docId: null,
     version: null,
+    docs: null,
+    docVersions: null,
     openapi: null,
     openapiSpecVersion: null,
     tree: null,
@@ -49,6 +62,8 @@ export default {
     this.appId = this.$route.params.appId
     this.docId = this.$route.params.docId
     this.version = this.$route.params.version
+    this.docs = this.$route.params.docs
+    this.docVersions = this.$route.params.docVersions
     this.openapi = await this.getOpenApi(this.appId, this.docId, this.version)
     // validate this source object with openapi specification
     this.openapiSpecVersion = this.openapi.openapi
@@ -62,14 +77,14 @@ export default {
         return
       }
 
-      const url = process.env.VUE_APP_API_BASE_URL + 'openapis/' + appId + '/' + docId + '/' + version
+      const url = process.env.VUE_APP_API_BASE_URL + 'docs/openapi/' + appId + '/' + docId + '/' + version
       const authHeader = 'Bearer ' + localStorage.token
 
       try {
         this.loading = true
         const res = await axios.get(url, {headers: {Authorization: authHeader}})
         this.loading = false
-        return res.data.data
+        return res.data
       }
       catch (error) {
         this.loading = false
@@ -144,8 +159,6 @@ export default {
         })
       })
 
-      console.log(tagMap)
-
       if (openapi['x-tagGroups']) {
         return openapi['x-tagGroups'].map(tgroup => Object.assign(tgroup, {key: tgroup.name, resources: tgroup.tags.map(tag => Object.assign(tag, tagMap[tag.name]))}))
       }
@@ -168,6 +181,11 @@ export default {
   .api-reference-wrap {
     height: 100vh;
   }
+
+  .api-reference-wrap h3.md-title {
+    margin-right: 15px;
+  }
+
   .api-reference-container {
     display: inline-flex;
   }
