@@ -1,6 +1,6 @@
 <template>
   <div class="app-main-layout">
-    <md-app md-mode="reveal">
+    <md-app md-mode="fixed">
       <md-app-toolbar class="md-primary">
         <span class="md-title">Invariant Telecom</span>
         <div class="md-toolbar-section-end">

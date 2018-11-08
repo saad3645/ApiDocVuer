@@ -1,40 +1,47 @@
 <template>
-  <div>
+  <div class="api-reference-wrap">
     <md-progress-bar md-mode="indeterminate" v-if="loading" />
-    <div v-if="openapi" class="api-reference-wrap">
-      <md-toolbar md-elevation="0">
-        <div class="md-toolbar-section-start">
-          <h3 class="md-title">{{openapi.info.title}}</h3>
-          <md-menu md-size="medium" md-align-trigger>
-            <md-button class="md-accent" md-menu-trigger>{{openapi.info['x-subtitle']}}</md-button>
-            <md-menu-content>
-              <md-menu-item v-for="doc in docs" :key="doc">{{doc}}</md-menu-item>
-            </md-menu-content>
-          </md-menu>
-          <md-menu md-size="medium" md-align-trigger>
-            <md-button class="md-accent" md-menu-trigger>v {{openapi.info.version}}</md-button>
-            <md-menu-content>
-              <md-menu-item v-for="version in docVersions[docId]" :key="version">{{version}}</md-menu-item>
-            </md-menu-content>
-          </md-menu>
-        </div>
-        <div class="md-toolbar-section-end">
-          <md-button class="md-dense md-primary md-icon-button">
-            <md-icon>refresh</md-icon>
-          </md-button>
-          <md-button class="md-dense md-primary">Export</md-button>
-        </div>
-      </md-toolbar>
-      <md-content class="api-reference-container">
-        <md-drawer md-permanent="clipped">
+    <md-toolbar v-if="openapi" class="md-dense" md-elevation="2">
+      <div class="md-toolbar-section-start">
+        <h3 class="md-title">{{openapi.info.title}}</h3>
+        <md-menu md-size="medium" md-align-trigger>
+          <md-button class="md-accent" md-menu-trigger>{{openapi.info['x-subtitle']}}</md-button>
+          <md-menu-content>
+            <md-menu-item v-for="doc in docs" :key="doc">{{doc}}</md-menu-item>
+          </md-menu-content>
+        </md-menu>
+        <md-menu md-size="medium" md-align-trigger>
+          <md-button class="md-accent" md-menu-trigger>v {{openapi.info.version}}</md-button>
+          <md-menu-content>
+            <md-menu-item v-for="version in docVersions[docId]" :key="version">{{version}}</md-menu-item>
+          </md-menu-content>
+        </md-menu>
+      </div>
+      <div class="md-toolbar-section-end">
+        <md-button class="md-primary md-icon-button">
+          <md-icon>refresh</md-icon>
+          <md-tooltip>Refresh</md-tooltip>
+        </md-button>
+        <md-button class="md-primary md-icon-button">
+          <md-icon>save_alt</md-icon>
+          <md-tooltip>Download OpenApi</md-tooltip>
+        </md-button>
+      </div>
+    </md-toolbar>
+    <div v-if="openapi" class="md-layout">
+      <div class="md-layout-item menu-bar">
+        <md-drawer md-fixed md-permanent="clipped" class="md-scrollbar">
           <MenuContent :tree="tree"></MenuContent>
         </md-drawer>
-        <md-content>
-          <div class="api-content">
+      </div>
+      <div class="md-layout-item api-reference">
+        <md-content class="api-reference-content">
+          <ResourceGroup v-for="group in tree" :key="group.key"></ResourceGroup>
+          <!-- <div class="api-content-2">
             <code>{{JSON.stringify(openapi)}}</code>
-          </div>
+          </div> -->
         </md-content>
-      </md-content>
+      </div>
     </div>
   </div>
 </template>
@@ -42,12 +49,13 @@
 <script>
 import axios from 'axios'
 import MenuContent from '@/components/Menu/MenuContent'
+import ResourceGroup from '@/components/Content/ResourceGroup'
 
 const REST_METHOD_REGEX = /^(get|post|put|patch|delete|options|head)$/i
 
 export default {
   name: 'Reference',
-  components: {MenuContent},
+  components: {MenuContent, ResourceGroup},
   data: () => ({
     appId: null,
     docId: null,
@@ -180,26 +188,24 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .api-reference-wrap {
-    height: 100vh;
+  .md-layout-item.menu-bar {
+    min-width: 250px;
+    max-width: 250px;
   }
 
-  .api-reference-wrap h3.md-title {
-    margin-right: 15px;
-  }
-
-  .api-reference-container {
-    display: inline-flex;
+  .api-reference-wrap .md-toolbar h3.md-title {
+    margin-right: 20px;
   }
 
   .md-drawer {
     min-width: 250px;
     max-width: 250px;
-  }
-
-  .api-content {
-    border-left-style: solid;
-    border-left-width: 1px;
-    border-left-color: rgba(0,0,0,0.12);
+    background-color: #fafafa;
+    border-right-style: solid;
+    border-right-width: 1px;
+    border-right-color: rgba(0,0,0,0.12);
+    position: sticky;
+    top: 0;
+    height: calc(100vh - 112px);
   }
 </style>
