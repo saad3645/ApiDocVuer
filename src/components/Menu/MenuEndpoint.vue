@@ -22,6 +22,10 @@ export default {
 
 <style lang="scss" scoped>
   .endpoint-method {
+    min-width: 48px;
+  }
+
+  .endpoint-method span {
     border-style: solid;
     border-width: 1px;
     border-radius: 4px;
@@ -29,44 +33,41 @@ export default {
     font-size: 10.5px;
     padding: 1px 2px;
     text-transform: uppercase;
-    margin-right: 12px;
-    min-width: 42px;
-    text-align: center;
   }
 
-  .endpoint-method.get,
-  .endpoint-method.GET {
+  .endpoint-method.get span,
+  .endpoint-method.GET span {
     /*border-color: #c0e69a;*/
     background-color: #4f9c00;
     border-color: #4f9c00;
     color: #ffffff;
   }
 
-  .endpoint-method.post,
-  .endpoint-method.POST {
+  .endpoint-method.post span,
+  .endpoint-method.POST span {
     /*border-color: #FFBF92;*/
     background-color: #fe964c;
     border-color: #fe964c;
     color: #ffffff;
   }
 
-  .endpoint-method.put,
-  .endpoint-method.PUT {
+  .endpoint-method.put span,
+  .endpoint-method.PUT span {
     /*border-color: #9ab1f8;*/
     background-color: #0090c0; /*#0030c0;*/
     border-color: #0090c0;
     color: #ffffff;
   }
 
-  .endpoint-method.patch,
-  .endpoint-method.PATCH {
+  .endpoint-method.patch span,
+  .endpoint-method.PATCH span {
     /*border-color: #a593f8;*/
     background-color: #5d00b9;
     color: #ffffff;
   }
 
-  .endpoint-method.delete,
-  .endpoint-method.DELETE {
+  .endpoint-method.delete span,
+  .endpoint-method.DELETE span {
     /*border-color: #f8b19a;*/
     background-color: #c03000;
     color: #ffffff;
@@ -81,7 +82,7 @@ export default {
 
   .endpoint-summary {
     font-family: Montserrat, sans-serif;
-    font-size: 13px;
+    font-size: 12px;
     color: rgb(51, 51, 51);
   }
 </style>

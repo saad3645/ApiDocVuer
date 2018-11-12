@@ -36,10 +36,7 @@
       </div>
       <div class="md-layout-item api-reference">
         <md-content class="api-reference-content">
-          <ResourceGroup v-for="group in tree" :key="group.key"></ResourceGroup>
-          <!-- <div class="api-content-2">
-            <code>{{JSON.stringify(openapi)}}</code>
-          </div> -->
+          <ContentGroup v-for="group in tree" :name="group.name" :title="group.title" :description="group.description" :resources="group.resources" :key="group.key"></ContentGroup>
         </md-content>
       </div>
     </div>
@@ -49,13 +46,13 @@
 <script>
 import axios from 'axios'
 import MenuContent from '@/components/Menu/MenuContent'
-import ResourceGroup from '@/components/Content/ResourceGroup'
+import ContentGroup from '@/components/Content/ContentGroup'
 
 const REST_METHOD_REGEX = /^(get|post|put|patch|delete|options|head)$/i
 
 export default {
   name: 'Reference',
-  components: {MenuContent, ResourceGroup},
+  components: {MenuContent, ContentGroup},
   data: () => ({
     appId: null,
     docId: null,
