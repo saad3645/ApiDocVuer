@@ -35,7 +35,7 @@
         </md-drawer>
       </div>
       <div class="md-layout-item api-reference">
-        <md-content class="api-reference-content">
+        <md-content class="api-content">
           <ContentGroup v-for="group in tree" :name="group.name" :title="group.title" :description="group.description" :resources="group.resources" :key="group.key"></ContentGroup>
         </md-content>
       </div>
@@ -140,6 +140,7 @@ export default {
               method: op,
               summary: openapi.paths[path].summary,
               description: openapi.paths[path].description,
+              'x-parameters': openapi.paths[path]['x-parameters'],
               servers: openapi.paths[path].servers,
               operationId: (op + '-' + path.replace(/\//g, '-'))
             }, openapi.paths[path][op]
