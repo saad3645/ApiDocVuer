@@ -1,7 +1,7 @@
 <template>
   <div class="app-main-layout">
     <md-app md-mode="fixed">
-      <md-app-toolbar class="md-primary">
+      <md-app-toolbar class="md-primary md-dense">
         <span class="md-title">Invariant Telecom</span>
         <div class="md-toolbar-section-end">
           <md-button v-if="superuser" class="md-primary">Create</md-button>

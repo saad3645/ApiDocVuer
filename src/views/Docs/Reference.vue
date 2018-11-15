@@ -123,28 +123,20 @@ export default {
       const pathMap = {}
 
       Object.keys(openapi.paths).forEach(path => {
-        pathMap[path] = {
-          key: path,
-          path: path,
-          summary: openapi.paths[path].summary,
-          description: openapi.paths[path].description,
-          servers: openapi.paths[path].servers,
-          endpoints: []
-        }
-
-        Object.keys(openapi.paths[path]).filter(item => REST_METHOD_REGEX.test(item)).forEach(op => {
-          const endpoint = Object.assign(
-            {
-              key: (op + '-' + path),
-              path: path,
-              method: op,
-              summary: openapi.paths[path].summary,
-              description: openapi.paths[path].description,
-              'x-parameters': openapi.paths[path]['x-parameters'],
-              servers: openapi.paths[path].servers,
-              operationId: (op + '-' + path.replace(/\//g, '-'))
-            }, openapi.paths[path][op]
-          )
+        const endpoints = Object.keys(openapi.paths[path]).filter(item => REST_METHOD_REGEX.test(item)).map(op => {
+          const endpoint = {
+            key: (op + '-' + path),
+            path: path,
+            method: op,
+            summary: (openapi.paths[path][op].summary || openapi.paths[path].summary),
+            description: (openapi.paths[path][op].description || openapi.paths[path].description),
+            operationId: (openapi.paths[path][op].operationId || (op + '-' + path.replace(/\//g, '-'))),
+            'x-parameters': (openapi.paths[path][op]['x-parameters'] || openapi.paths[path]['x-parameters']),
+            requestBody: openapi.paths[path][op].requestBody,
+            responses: openapi.paths[path][op].responses,
+            deprecated: openapi.paths[path].deprecated,
+            servers: (openapi.paths[path][op].servers || openapi.paths[path].servers || openapi.servers)
+          }
 
           if (openapi.paths[path][op].tags) {
             openapi.paths[path][op].tags.forEach(tag => {
@@ -163,8 +155,17 @@ export default {
             })
           }
 
-          pathMap[path].endpoints.push(endpoint)
+          return endpoint
         })
+
+        pathMap[path] = {
+          key: path,
+          path: path,
+          summary: openapi.paths[path].summary,
+          description: openapi.paths[path].description,
+          servers: openapi.paths[path].servers,
+          endpoints: endpoints
+        }
       })
 
       if (openapi['x-tagGroups']) {
@@ -204,6 +205,6 @@ export default {
     border-right-color: rgba(0,0,0,0.12);
     position: sticky;
     top: 0;
-    height: calc(100vh - 112px);
+    height: calc(100vh - 96px);
   }
 </style>

@@ -4,16 +4,16 @@
     <div v-if="description">
       <p>{{description}}</p>
     </div>
-    <Resource v-for="resource in resources" :name="resource.name" :title="resource.title || resource['x-title']" :path="resource.path" :description="resource.description" :endpoints="resource.endpoints" :key="resource.key"></Resource>
+    <ApiResource v-for="resource in resources" :name="resource.name" :title="resource.title || resource['x-title']" :path="resource.path" :description="resource.description" :endpoints="resource.endpoints" :key="resource.key"></ApiResource>
   </md-content>
 </template>
 
 <script>
-import Resource from '@/components/Content/Resource'
+import ApiResource from '@/components/Content/ApiResource'
 
 export default {
-  name: 'Reference',
-  components: {Resource},
+  name: 'ContentGroup',
+  components: {ApiResource},
 
   props: ['name', 'title', 'description', 'resources'],
 
