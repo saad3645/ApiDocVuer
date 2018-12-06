@@ -1,0 +1,177 @@
+{
+  "$id": "https://github.com/saad3645/ApiDocVuer/src/assets/schemas/openapi@3.0.x/openapi.schema.json",
+  "type": "object",
+  "required": ["openapi", "info", "paths"],
+  "properties": {
+    "openapi": {
+      "type": "string",
+      "pattern": "^(3\\.0\\.([0-9]|X|x))$"
+    },
+    "info": {
+      "type": "object",
+      "required": ["title", "version"],
+      "properties": {
+        "title": {"type": "string"},
+        "description": {"type": ["string", "null"]},
+        "termsOfService": {"type": "string"},
+        "contact": {
+          "type": "object",
+          "properties": {
+            "name": {"type": "string"},
+            "url": {"type": "string"},
+            "email": {"type": "string"},
+            "x-github": {"type": "string"}
+          }
+        },
+        "license": {
+          "type": "object",
+          "required": ["name"],
+          "properties": {
+            "name": {"type": "string"},
+            "url": {"type": "string"}
+          }
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^([0-9]+\\.[0-9]+\\.[0-9]+)$"
+        },
+        "x-documentId": {"type": "string"},
+        "x-parentId": {"type": "string"},
+        "x-versions": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "x-logo": {
+          "type": "object",
+          "properties": {
+            "url": {"type": "string"},
+            "data": {"type": "string"},
+            "backgroundColor": {"type": "string"},
+            "altText": {"type": "string"}
+          }
+        }
+      }
+    },
+    "servers": {
+      "$ref": "servers.schema.json"
+    },
+    "paths": {
+      "type": "object",
+      "patternProperties": {
+        "^(\\/[a-zA-Z0-9/_~-]+)$": {
+          "type": "object",
+          "patternRequired": ["^(get|GET|post|POST|put|PUT|patch|PATCH|delete|DELETE|head|HEAD|options|OPTIONS)$"],
+          "properties": {
+            "summary": {"type": "string"},
+            "description": {"type": ["string", "null"]},
+            "servers": {
+              "$ref": "servers.schema.json"
+            },
+            "parameters": {
+              "$ref": "parameters.schema.json"
+            }
+          },
+          "patternProperties": {
+            "^(get|GET|post|POST|put|PUT|patch|PATCH|delete|DELETE|head|HEAD|options|OPTIONS)$": {
+              "type": "object",
+              "required": ["responses"],
+              "properties": {
+                "tags": {
+                  "type": "array",
+                  "items": {"type": "string"},
+                  "minItems": 1,
+                  "uniqueItems": true
+                },
+                "summary": {"type": "string"},
+                "description": {"type": ["string", "null"]},
+                "operationId": {"type": "string"},
+                "deprecated": {"type": "boolean"},
+                "servers": {
+                  "$ref": "servers.schema.json"
+                },
+                "parameters": {
+                  "$ref": "parameters.schema.json"
+                },
+                "requestBody": {
+                  "type": "object",
+                  "required": ["content"],
+                  "properties": {
+                    "description": {"type": ["string", "null"]},
+                    "content": {
+                      "$ref": "content.schema.json"
+                    },
+                    "required": {"type": "boolean"}
+                  }
+                },
+                "responses": {
+                  "type": "object",
+                  "patternRequired": ["^([1-5]([0-9]{2}|XX|xx))$"],
+                  "patternProperties": {
+                    "^([1-5]([0-9]{2}|XX|xx))$": {
+                      "type": "object",
+                      "required": ["description"],
+                      "properties": {
+                        "description": {"type": ["string", "null"]},
+                        "headers": {
+                          "type": "object",
+                          "patternRequired": ["^([a-zA-Z][a-zA-Z0-9_-]+)$"],
+                          "patternProperties": {
+                            "^([a-zA-Z][a-zA-Z0-9_-]+)$": {
+                              "type": "object",
+                              "properties": {
+                                "description": {"type": ["string", "null"]},
+                                "required": {"type": "boolean"},
+                                "deprecated": {"type": "boolean"},
+                                "style": {
+                                  "type": "string",
+                                  "enum": ["simple", "form", "label", "spaceDelimited", "pipeDelimited", "deepObject"]
+                                },
+                                "explode": {"type": "boolean"},
+                                "allowReserved": {"type": "boolean"},
+                                "schema": {
+                                  "$ref": "schema_def.schema.json"
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "content": {
+                          "$ref": "content.schema.json"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "tags": {
+      "$ref": "tags.schema.json"
+    },
+    "x-tagGroups": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "tags"],
+        "properties": {
+          "name": {"type": "string"},
+          "title": {"type": "string"},
+          "description": {"type": ["string", "null"]},
+          "tags": {
+            "$ref": "tags.schema.json"
+          }
+        }
+      },
+      "minItems": 1
+    },
+    "x-menuDefaultGroup": {
+      "type": "object",
+      "properties": {
+        "title": {"type": "string"}
+      }
+    }
+  }
+}

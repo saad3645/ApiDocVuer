@@ -5,33 +5,26 @@
       <div v-if="apps" class="md-layout-item md-size-70 md-small-size-90 md-xsmall-size-100">
         <h1 class="md-display-4">Applications</h1>
         <div class="md-layout md-alignment-center-center">
-          <md-card v-for="app in apps" :key="app.name" md-with-hover class="md-layout-item">
+          <md-card v-for="app in apps" :key="app._id" md-with-hover class="md-layout-item">
             <md-card-header>
-              <div class="md-title">{{app.title}}</div>
+              <div class="md-title">{{app._source.name}}</div>
             </md-card-header>
             <md-card-content>
-              {{app.description}}
+              {{app._source.description}}
             </md-card-content>
             <md-card-actions>
-              <md-menu v-if="app.docs" md-size="small" md-align-trigger>
-                <md-button class="md-primary" md-menu-trigger>{{selectedDoc[app.name]}}</md-button>
+              <md-menu v-if="app._source.docs" md-size="medium" md-align-trigger>
+                <md-button class="md-primary" md-menu-trigger>{{selectedDoc[app._id]}}</md-button>
                 <md-tooltip md-direction="top">Select Document</md-tooltip>
                 <md-menu-content>
-                  <md-menu-item v-for="doc in app.docs" :key="doc" @click="selectDoc(app.name, doc)">{{doc}}</md-menu-item>
+                  <md-menu-item v-for="doc in app._source.docs" :key="doc" @click="selectDoc(app._id, doc)">{{doc}}</md-menu-item>
                 </md-menu-content>
               </md-menu>
-              <md-menu v-if="app.docs && selectedDoc[app.name]" md-size="small" md-align-trigger>
-                <md-button class="md-accent" md-menu-trigger>v {{selectedVersion[app.name]}}</md-button>
-                <md-tooltip md-direction="top">Select Version</md-tooltip>
-                <md-menu-content>
-                  <md-menu-item v-for="version in app['@' + selectedDoc[app.name]]" :key="version" @click="selectVersion(app.name, version)">{{version}}</md-menu-item>
-                </md-menu-content>
-              </md-menu>
-              <md-button v-if="app.docs && selectedDoc[app.name] && selectedVersion[app.name]" class="md-icon-button" :to="{name: 'Reference', params: {appId: app.name, docId: selectedDoc[app.name], version: selectedVersion[app.name], docs: app.docs, docVersions: docVersions[app.name]}}">
+              <md-button v-if="app._source.docs && selectedDoc[app._id]" class="md-icon-button" :to="{name: 'Reference', params: {appId: app._id, docId: selectedDoc[app._id], version: 'current', docs: app._source.docs}}">
                 <md-icon>explore</md-icon>
                 <md-tooltip>View Api Reference</md-tooltip>
               </md-button>
-              <md-button v-if="!app.docs" class="md-dense" disabled>No Doc Available</md-button>
+              <md-button v-if="!app._source.docs" class="md-dense" disabled>No Doc Available</md-button>
             </md-card-actions>
           </md-card>
         </div>
@@ -51,9 +44,7 @@ export default {
 
   data: () => ({
     apps: null,
-    docVersions: null,
     selectedDoc: null,
-    selectedVersion: null,
     loading: false,
     snackbarMessage: null,
     showSnackbar: false
@@ -61,43 +52,12 @@ export default {
 
   async created() {
     this.apps = await this.getAppList()
-
-    this.docVersions = this.apps.reduce((result, app) => {
-      if (app.docs) {
-        result[app.name] = app.docs.reduce((sub, doc) => {
-          if (app['@' + doc]) {
-            sub[doc] = app['@' + doc]
-          }
-          return sub
-        }, {})
-      }
-      return result
-    }, {})
-
-    this.selectedDoc = this.apps.reduce((result, app) => {
-      if (app.docs && app.docs.length > 0) {
-        result[app.name] = app.docs[0]
-      }
-      return result
-    }, {})
-
-    const self = this
-    this.selectedVersion = this.apps.reduce((result, app) => {
-      if (self.selectedDoc[app.name]) {
-        result[app.name] = app['@' + self.selectedDoc[app.name]][0]
-      }
-      return result
-    }, {})
+    this.selectedDoc = this.mapApps(this.apps)
   },
 
   methods: {
     selectDoc(appName, doc) {
       this.selectedDoc[appName] = doc
-      this.selectedVersion[appName] = this.docVersions[appName][doc][0]
-    },
-
-    selectVersion(appName, version) {
-      this.selectedVersion[appName] = version
     },
 
     async getAppList() {
@@ -113,7 +73,7 @@ export default {
         this.loading = true
         const res = await axios.get(url, {headers: {Authorization: authHeader}})
         this.loading = false
-        return res.data.data
+        return res.data.hits
       }
       catch (error) {
         this.loading = false
@@ -138,6 +98,13 @@ export default {
         }
         this.showSnackbar = true
       }
+    },
+
+    mapApps(list) {
+      return list.reduce((obj, app) => {
+        obj[app._id] = app._source.docs ? app._source.docs[0] : null
+        return obj
+      }, {})
     }
   }
 }

@@ -11,30 +11,23 @@
         </md-menu>
       </div>
     </div>
-    <md-divider class="heading-divider"></md-divider>
+    <md-divider></md-divider>
     <md-table>
       <md-table-row class="md-layout">
         <md-table-head class="md-layout-item md-size-30">Parameter</md-table-head>
         <md-table-head class="md-layout-item md-size-20">Type</md-table-head>
         <md-table-head class="md-layout-item">Description</md-table-head>
       </md-table-row>
-      <md-table-row v-for="prop in schema[selectedMediaType]" :key="prop.name" v-if="prop.parent === null || schema[selectedMediaType][prop.parent].expanded" class="md-layout">
-        <md-table-cell class="md-layout-item md-size-30 parameter-cell">{{prop.name}}</md-table-cell>
-        <md-table-cell class="md-layout-item md-size-20">
-          <div class="type-cell">{{prop.type}}</div>
-          <div v-if="prop.format" class="format-cell">{{prop.format}}</div>
-        </md-table-cell>
-        <md-table-cell class="md-layout-item description-cell">{{prop.description}}</md-table-cell>
-      </md-table-row>
+      <ParameterItem v-for="param in schema[selectedMediaType]" v-if="!param.parent || param.parent.display.expanded" :key="param.name" :name="param.name" :required="param.required" :level="param.level" :schema="param.schema" :display="param.display"></ParameterItem>
     </md-table>
   </div>
 </template>
 
 <script>
-import Parameters from '@/components/Content/Parameters'
+import ParameterItem from '@/components/Content/ParameterItem'
 export default {
   name: 'RequestBody',
-  components: {Parameters},
+  components: {ParameterItem},
   props: ['description', 'bodyContent'],
 
   data: () => ({
@@ -57,20 +50,22 @@ export default {
       }, {})
     },
 
-    flattenProperties(node, nodeIndex, nodeLevel) {
-      return Object.keys(node.properties).reduce((props, prop, index) => {
-        props.push(Object.assign(
-          {
-            name: prop,
-            parent: nodeIndex,
-            expanded: false,
-            isRequired: (node.required && Array.isArray(node.required) && node.required.indexOf(prop) !== -1)
-          }, node.properties[prop]
-        ))
+    flattenProperties(node, parent, level) {
+      return Object.keys(node.properties).reduce((props, name) => {
+        const prop = {
+          name: name,
+          parent: parent,
+          required: (node.required && Array.isArray(node.required) && node.required.indexOf(name) !== -1),
+          level: level,
+          schema: node.properties[name],
+          display: {expanded: false}
+        }
 
-        if (node.properties[prop].type === 'object' && nodeLevel < 2) {
-          const propsArray = this.flattenProperties(node.properties[prop], (props.length - 1), (nodeLevel + 1))
-          return props.concat(propsArray)
+        props.push(prop)
+
+        if (node.properties[name].type === 'object' && level < 2) {
+          const props2 = this.flattenProperties(node.properties[name], prop, (level + 1))
+          return props.concat(props2)
         }
         else {
           return props
@@ -87,7 +82,7 @@ export default {
 
 <style lang="scss" scoped>
   .request-body {
-    padding: 40px 0px 40px;
+    padding: 20px 0px 20px;
   }
 
   .request-body-heading {
@@ -113,14 +108,5 @@ export default {
 
   .md-table.md-theme-default .md-table-row:hover:not(.md-header-row) .md-table-cell {
     background-color: #ffffff;
-  }
-
-  .parameter-cell {
-    font-family: Courier, monospace;
-    font-size: 13px;
-  }
-
-  .type-cell {
-    color: #808080;
   }
 </style>

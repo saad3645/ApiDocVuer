@@ -1,8 +1,8 @@
 <template>
   <div class="app-main-layout">
     <md-app md-mode="fixed">
-      <md-app-toolbar class="md-primary md-dense">
-        <span class="md-title">Invariant Telecom</span>
+      <md-app-toolbar class="md-primary">
+        <span class="md-title">{{heading}}</span>
         <div class="md-toolbar-section-end">
           <md-button v-if="superuser" class="md-primary">Create</md-button>
           <md-button v-if="currentRoute.name !== 'Apps'" class="md-primary">Apps</md-button>
@@ -22,6 +22,7 @@ export default {
   name: 'MainLayout',
 
   data: () => ({
+    heading: process.env.VUE_APP_DEFAULT_HEADING,
     currentRoute: null,
     superuser: false
   }),

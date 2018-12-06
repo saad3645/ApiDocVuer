@@ -1,0 +1,13 @@
+{
+  "$id": "https://github.com/saad3645/ApiDocVuer/src/assets/schemas/openapi@3.0.x/servers.schema.json",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["url"],
+    "properties": {
+      "url": {"type": "string"},
+      "description": {"type": ["string", "null"]}
+    }
+  },
+  "minItems": 1
+}

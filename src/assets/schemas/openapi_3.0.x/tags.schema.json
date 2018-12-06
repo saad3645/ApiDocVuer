@@ -1,0 +1,18 @@
+{
+  "$id": "https://github.com/saad3645/ApiDocVuer/src/assets/schemas/openapi@3.0.x/tags.schema.json",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["name"],
+    "properties": {
+      "name": {
+        "type": "string",
+        "pattern": "^([a-zA-Z_][a-zA-Z0-9.+/_-]+)$"
+      },
+      "description": {"type": ["string", "null"]},
+      "x-title": {"type": "string"},
+      "x-trait": {"type": "string"}
+    }
+  },
+  "minItems": 1
+}

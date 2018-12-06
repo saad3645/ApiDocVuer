@@ -10,15 +10,15 @@
         <span class="md-list-item-text">Authentication</span>
       </md-list-item>
     </md-list>
-    <MenuResourceGroup v-for="group in tree" :name="group.name" :title="group.title || group.menuTitle" :resources="group.resources" :key="group.key"></MenuResourceGroup>
+    <MenuGroup v-for="group in tree" :name="group.name" :title="group.title || group.menuTitle" :resources="group.resources" :key="group.key"></MenuGroup>
   </div>
 </template>
 
 <script>
-import MenuResourceGroup from '@/components/Menu/MenuResourceGroup'
+import MenuGroup from '@/components/Menu/MenuGroup'
 export default {
   name: 'MenuContent',
-  components: {MenuResourceGroup},
+  components: {MenuGroup},
   props: ['tree'],
 
   created() {

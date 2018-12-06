@@ -3,7 +3,7 @@
     <md-list-item v-if="title || name">
       <span class="md-list-item-text">{{displayName}}</span>
     </md-list-item>
-    <MenuResource v-for="resource in resources" :name="resource.name" :title="resource.title || resource['x-title']" :path="resource.path" :endpoints="resource.endpoints" :key="resource.key"></MenuResource>
+    <MenuResource v-for="resource in resourceList" :name="resource.name" :title="resource.title || resource['x-title']" :path="resource.path" :endpoints="resource.endpoints" :key="resource.key"></MenuResource>
   </md-list>
 </template>
 
@@ -15,10 +15,11 @@ export default {
   props: ['name', 'title', 'resources'],
 
   data: () => ({
+    resourceList: null
   }),
 
   created() {
-    // console.log(this.resources)
+    this.resourceList = this.resources.filter(r => r.endpoints && r.endpoints.length > 0)
   },
 
   computed: {

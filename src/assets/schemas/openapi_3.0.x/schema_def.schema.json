@@ -1,0 +1,58 @@
+{
+  "$id": "https://github.com/saad3645/ApiDocVuer/src/assets/schemas/openapi@3.0.x/schema_def.schema.json",
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": ["number", "Number", "integer", "Integer", "string", "String", "boolean", "Boolean", "array", "Array", "object", "Object", "any", "Any"]
+    },
+    "title": {"type": "string"},
+    "multipleOf": {"type": "number"},
+    "maximum": {"type": "number"},
+    "exclusiveMaximum": {"type": "number"},
+    "minimum": {"type": "number"},
+    "exclusiveMinimum": {"type": "number"},
+    "maxLength": {"type": "number"},
+    "minLength": {"type": "number"},
+    "pattern": {"type": "string"},
+    "format": {
+      "type": "string",
+      "enum": ["date", "time", "date-time", "uri", "url", "email", "password", "hostname", "ipv4", "ipv6", "regex", "uuid", "objectId", "decimal", "binary"]
+    },
+    "maxItems": {"type": "number"},
+    "minItems": {"type": "number"},
+    "uniqueItems": {"type": "boolean"},
+    "items": {
+      "$ref": "#"
+    },
+    "required": {
+      "type": "array",
+      "items": {"type": "string"},
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "properties": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#"
+      }
+    },
+    "patternProperties": {
+      "$ref": "#"
+    },
+    "additionalProperties": {
+      "$ref": "#"
+    },
+    "enum": {
+      "type": "array",
+      "items": {"type": "string"},
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "const": {},
+    "description": {"type": ["string", "null"]},
+    "default": {},
+    "nullable": {"type": "boolean"},
+    "deprecated": {"type": "boolean"}
+  }
+}

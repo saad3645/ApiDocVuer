@@ -6,7 +6,10 @@
         <p>{{description}}</p>
       </div>
     </div>
-    <ApiEndpoint v-for="endpoint in endpoints" :operationId="endpoint.operationId" :method="endpoint.method" :path="endpoint.path" :summary="endpoint.summary" :description="endpoint.description" :parameters="endpoint['x-parameters']" :requestBody="endpoint.requestBody" :responses="endpoint.responses" :deprecated="endpoint.deprecated" :security="endpoint.security" :servers="endpoint.servers" :key="endpoint.operationId"></ApiEndpoint>
+    <div v-for="endpoint in endpoints" :key="endpoint.operationId">
+      <md-divider></md-divider>
+      <ApiEndpoint  :operationId="endpoint.operationId" :method="endpoint.method" :path="endpoint.path" :summary="endpoint.summary" :description="endpoint.description" :parameters="endpoint['x-parameters']" :requestBody="endpoint.requestBody" :responses="endpoint.responses" :deprecated="endpoint.deprecated" :security="endpoint.security" :servers="endpoint.servers"></ApiEndpoint>
+    </div>
   </div>
 </template>
 

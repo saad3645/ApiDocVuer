@@ -46,13 +46,18 @@ export default new Router({
       beforeEnter: authenticate,
       children: [
         {
-          path: ':appId/:docId/:version/overview',
+          path: ':appId/:docId/overview',
           name: 'Overview',
           component: () => import(/* webpackChunkName: "doc_overview" */ './views/Docs/Overview.vue')
         },
         {
-          path: ':appId/:docId/:version/reference',
+          path: ':appId/:docId//reference/:version',
           name: 'Reference',
+          component: () => import(/* webpackChunkName: "doc_reference" */ './views/Docs/Reference.vue')
+        },
+        {
+          path: ':appId/:docId//reference/:version/:branch',
+          name: 'ReferenceBranch',
           component: () => import(/* webpackChunkName: "doc_reference" */ './views/Docs/Reference.vue')
         }
       ]

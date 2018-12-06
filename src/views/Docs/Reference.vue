@@ -1,42 +1,15 @@
 <template>
   <div class="api-reference-wrap">
     <md-progress-bar md-mode="indeterminate" v-if="loading" />
-    <md-toolbar v-if="openapi" class="md-dense" md-elevation="2">
-      <div class="md-toolbar-section-start">
-        <h3 class="md-title">{{openapi.info.title}}</h3>
-        <md-menu md-size="medium" md-align-trigger>
-          <md-button class="md-accent" md-menu-trigger>{{openapi.info['x-subtitle']}}</md-button>
-          <md-menu-content>
-            <md-menu-item v-for="doc in docs" :key="doc">{{doc}}</md-menu-item>
-          </md-menu-content>
-        </md-menu>
-        <md-menu md-size="medium" md-align-trigger>
-          <md-button class="md-accent" md-menu-trigger>v {{openapi.info.version}}</md-button>
-          <md-menu-content>
-            <md-menu-item v-for="version in docVersions[docId]" :key="version">{{version}}</md-menu-item>
-          </md-menu-content>
-        </md-menu>
-      </div>
-      <div class="md-toolbar-section-end">
-        <md-button class="md-primary md-icon-button">
-          <md-icon>refresh</md-icon>
-          <md-tooltip>Refresh</md-tooltip>
-        </md-button>
-        <md-button class="md-primary md-icon-button">
-          <md-icon>save_alt</md-icon>
-          <md-tooltip>Download OpenApi</md-tooltip>
-        </md-button>
-      </div>
-    </md-toolbar>
     <div v-if="openapi" class="md-layout">
       <div class="md-layout-item menu-bar">
         <md-drawer md-fixed md-permanent="clipped" class="md-scrollbar">
-          <MenuContent :tree="tree"></MenuContent>
+          <MenuContent :tree="contentTree"></MenuContent>
         </md-drawer>
       </div>
       <div class="md-layout-item api-reference">
         <md-content class="api-content">
-          <ContentGroup v-for="group in tree" :name="group.name" :title="group.title" :description="group.description" :resources="group.resources" :key="group.key"></ContentGroup>
+          <ContentGroup v-for="group in contentTree" :name="group.name" :title="group.title" :description="group.description" :resources="group.resources" :key="group.key"></ContentGroup>
         </md-content>
       </div>
     </div>
@@ -47,7 +20,16 @@
 import axios from 'axios'
 import MenuContent from '@/components/Menu/MenuContent'
 import ContentGroup from '@/components/Content/ContentGroup'
+import Ajv from 'ajv'
 
+import schemaDefSchema from '../../assets/schemas/openapi_3.0.x/schema_def.schema.json'
+import serversSchema from '../../assets/schemas/openapi_3.0.x/servers.schema.json'
+import parametersSchema from '../../assets/schemas/openapi_3.0.x/parameters.schema.json'
+import contentSchema from '../../assets/schemas/openapi_3.0.x/content.schema.json'
+import tagsSchema from '../../assets/schemas/openapi_3.0.x/tags.schema.json'
+import openapiSchema from '../../assets/schemas/openapi_3.0.x/openapi.schema.json'
+
+const ajv = new Ajv()
 const REST_METHOD_REGEX = /^(get|post|put|patch|delete|options|head)$/i
 
 export default {
@@ -58,10 +40,10 @@ export default {
     docId: null,
     version: null,
     docs: null,
-    docVersions: null,
+    collections: null,
     openapi: null,
     openapiSpecVersion: null,
-    tree: null,
+    contentTree: null,
     loading: false
   }),
 
@@ -69,22 +51,30 @@ export default {
     this.appId = this.$route.params.appId
     this.docId = this.$route.params.docId
     this.version = this.$route.params.version
+    this.branch = this.$route.params.branch ? this.$route.params.branch : 'master'
     this.docs = this.$route.params.docs
-    this.docVersions = this.$route.params.docVersions
-    this.openapi = await this.getOpenApi(this.appId, this.docId, this.version)
-    // validate this source object with openapi specification
-    this.openapiSpecVersion = this.openapi.openapi
-    this.tree = this.buildResourceTree(this.openapi)
+
+    this.openapi = await this.getOpenApi(this.appId, this.docId, this.version, this.branch)
+    const validate = ajv.addSchema([schemaDefSchema, serversSchema, parametersSchema, contentSchema, tagsSchema]).compile(openapiSchema)
+    if (validate(this.openapi)) {
+      this.openapiSpecVersion = this.openapi.openapi
+      this.contentTree = this.buildContentTree(this.openapi)
+    }
+    else {
+      console.log(validate.errors)
+    }
+
+    this.collections = this.getCollections
   },
 
   methods: {
-    async getOpenApi(appId, docId, version) {
+    async getOpenApi(appId, docId, version, branch) {
       if (!localStorage.token || !localStorage.token_expires_at || Math.ceil(Date.now() / 1000) >= localStorage.token_expires_at) {
         this.$router.push({name: 'Login'})
         return
       }
 
-      const url = process.env.VUE_APP_API_BASE_URL + 'docs/openapi/' + appId + '/' + docId + '/' + version
+      const url = process.env.VUE_APP_API_BASE_URL + 'docs/' + appId + '.' + docId + '?version=' + version + '&branch=' + branch
       const authHeader = 'Bearer ' + localStorage.token
 
       try {
@@ -118,7 +108,44 @@ export default {
       }
     },
 
-    buildResourceTree(openapi) {
+    mergeParameters(parameters) {
+      if (parameters) {
+        const cache = {}
+        return parameters.reduce((obj, param) => {
+          if (param && param.name && param.in && !cache[param.name + param.in]) {
+            if (!obj[param.in]) {
+              obj[param.in] = []
+            }
+            obj[param.in].push(param)
+            cache[param.name + param.in] = true
+          }
+          return obj
+        }, {})
+      }
+      else {
+        return null
+      }
+    },
+
+    mergeServers(servers) {
+      if (servers) {
+        const cache = {}
+        return servers.filter((item) => {
+          if (typeof item === 'object' && item !== null && !cache[item.url]) {
+            cache[item.url] = true
+            return true
+          }
+          else {
+            return false
+          }
+        })
+      }
+      else {
+        return null
+      }
+    },
+
+    buildContentTree(openapi) {
       const tagMap = {}
       const pathMap = {}
 
@@ -131,11 +158,11 @@ export default {
             summary: (openapi.paths[path][op].summary || openapi.paths[path].summary),
             description: (openapi.paths[path][op].description || openapi.paths[path].description),
             operationId: (openapi.paths[path][op].operationId || (op + '-' + path.replace(/\//g, '-'))),
-            'x-parameters': (openapi.paths[path][op]['x-parameters'] || openapi.paths[path]['x-parameters']),
+            parameters: this.mergeParameters(openapi.paths[path].parameters ? openapi.paths[path].parameters.concat(openapi.paths[path][op].parameters) : openapi.paths[path][op].parameters),
             requestBody: openapi.paths[path][op].requestBody,
             responses: openapi.paths[path][op].responses,
-            deprecated: openapi.paths[path].deprecated,
-            servers: (openapi.paths[path][op].servers || openapi.paths[path].servers || openapi.servers)
+            deprecated: openapi.paths[path][op].deprecated,
+            servers: this.mergeServers(openapi.servers ? openapi.servers.concat(openapi.paths[path].servers, openapi.paths[path][op].servers) : (openapi.paths[path].servers ? openapi.paths[path].servers.concat(openapi.paths[path][op].servers) : openapi.paths[path][op].servers))
           }
 
           if (openapi.paths[path][op].tags) {
@@ -205,6 +232,6 @@ export default {
     border-right-color: rgba(0,0,0,0.12);
     position: sticky;
     top: 0;
-    height: calc(100vh - 96px);
+    height: calc(100vh - 64px);
   }
 </style>

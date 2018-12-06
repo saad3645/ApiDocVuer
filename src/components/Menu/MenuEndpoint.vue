@@ -21,6 +21,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+  .menu-endpoint-item {
+    background-color: #fafafa;
+  }
+
   .endpoint-method {
     min-width: 48px;
   }
@@ -28,61 +32,54 @@ export default {
   .endpoint-method span {
     border-style: solid;
     border-width: 1px;
-    border-radius: 4px;
+    border-radius: 3px;
     font-family: Montserrat, sans-serif;
     font-size: 10.5px;
-    padding: 1px 2px;
+    color: #ffffff;
+    padding: 1px 3px;
     text-transform: uppercase;
   }
 
   .endpoint-method.get span,
   .endpoint-method.GET span {
-    /*border-color: #c0e69a;*/
-    background-color: #4f9c00;
-    border-color: #4f9c00;
-    color: #ffffff;
+    background-color: #61c000;
+    border-color: #61c000;
   }
 
   .endpoint-method.post span,
   .endpoint-method.POST span {
-    /*border-color: #FFBF92;*/
-    background-color: #fe964c;
-    border-color: #fe964c;
-    color: #ffffff;
+    background-color: #003bed;
+    border-color: #003bed;
   }
 
   .endpoint-method.put span,
   .endpoint-method.PUT span {
     /*border-color: #9ab1f8;*/
-    background-color: #0090c0; /*#0030c0;*/
-    border-color: #0090c0;
-    color: #ffffff;
+    background-color: #FE8F40;
+    border-color: #FE8F40;
   }
 
   .endpoint-method.patch span,
   .endpoint-method.PATCH span {
-    /*border-color: #a593f8;*/
     background-color: #5d00b9;
-    color: #ffffff;
+    border-color: #5d00b9;
   }
 
   .endpoint-method.delete span,
   .endpoint-method.DELETE span {
-    /*border-color: #f8b19a;*/
-    background-color: #c03000;
-    color: #ffffff;
+    background-color: #ed3b00;
+    border-color: #ed3b00;
   }
 
   .endpoint-method.options,
   .endpoint-method.OPTIONS {
-    /*border-color: #d3ca12;*/
-    background-color: #d3ca12;
-    color: #ffffff;
+    background-color: #009c5a;
+    border-color: #009c5a;
   }
 
   .endpoint-summary {
     font-family: Montserrat, sans-serif;
-    font-size: 12px;
-    color: rgb(51, 51, 51);
+    font-size: 12.5px;
+    color: #333333;
   }
 </style>

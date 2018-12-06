@@ -30,7 +30,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+  .menu-resource-item {
+    background-color: #fafafa;
+  }
+
   .md-list {
     padding-top: 0px;
+    padding-bottom: 0px;
   }
 </style>

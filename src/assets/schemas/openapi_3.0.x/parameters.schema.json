@@ -1,0 +1,28 @@
+{
+  "$id": "https://github.com/saad3645/ApiDocVuer/src/assets/schemas/openapi@3.0.x/parameters.schema.json",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["name", "in"],
+    "properties": {
+      "name": {"type": "string"},
+      "in": {
+        "type": "string",
+        "enum": ["query", "header", "path", "cookie"]
+      },
+      "description": {"type": ["string", "null"]},
+      "required": {"type": "boolean"},
+      "deprecated": {"type": "boolean"},
+      "style": {
+        "type": "string",
+        "enum": ["simple", "form", "label", "spaceDelimited", "pipeDelimited", "deepObject"]
+      },
+      "explode": {"type": "boolean"},
+      "allowReserved": {"type": "boolean"},
+      "schema": {
+        "$ref": "schema_def.schema.json"
+      }
+    }
+  },
+  "minItems": 1
+}
