@@ -1,11 +1,12 @@
 <template>
-  <md-list-item class="menu-endpoint-item" @click="go()">
+  <md-list-item class="menu-endpoint-item" @click="scrollTo(operationId)">
     <span class="endpoint-method" :class="method.toLowerCase()"><span>{{method}}</span></span>
     <span class="md-list-item-text endpoint-summary">{{summary || path}}</span>
   </md-list-item>
 </template>
 
 <script>
+import VueScrollTo from 'vue-scrollto'
 export default {
   name: 'MenuEndpoint',
   props: ['operationId', 'method', 'path', 'summary'],
@@ -13,8 +14,9 @@ export default {
   }),
 
   methods: {
-    go() {
-      console.log('go')
+    scrollTo(operationId) {
+      const element = '#' + operationId
+      VueScrollTo.scrollTo(element, 600, {container: '.md-app-scroller'})
     }
   }
 }
@@ -36,39 +38,43 @@ export default {
     font-family: Montserrat, sans-serif;
     font-size: 10.5px;
     color: #ffffff;
-    padding: 1px 3px;
+    padding: 2px 2px;
     text-transform: uppercase;
   }
 
   .endpoint-method.get span,
   .endpoint-method.GET span {
-    background-color: #61c000;
-    border-color: #61c000;
+    background-color: #c0e69a;
+    border-color: #c0e69a;
+    color: #4f9c00;
   }
 
   .endpoint-method.post span,
   .endpoint-method.POST span {
-    background-color: #003bed;
-    border-color: #003bed;
+    background-color: #9ab1f8;
+    border-color: #9ab1f8;
+    color: #0030c0;
   }
 
   .endpoint-method.put span,
   .endpoint-method.PUT span {
-    /*border-color: #9ab1f8;*/
-    background-color: #FE8F40;
-    border-color: #FE8F40;
+    background-color: #ffe5d3;
+    border-color: #ffe5d3;
+    color: #fe7f25;
   }
 
   .endpoint-method.patch span,
   .endpoint-method.PATCH span {
-    background-color: #5d00b9;
-    border-color: #5d00b9;
+    background-color: #a593f8;
+    border-color: #a593f8;
+    color: #5d00b9;
   }
 
   .endpoint-method.delete span,
   .endpoint-method.DELETE span {
-    background-color: #ed3b00;
-    border-color: #ed3b00;
+    background-color: #f8b19a;
+    border-color: #f8b19a;
+    color: #c03000;
   }
 
   .endpoint-method.options,

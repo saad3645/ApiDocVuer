@@ -4,11 +4,16 @@
     <div v-if="openapi" class="md-layout">
       <div class="md-layout-item menu-bar">
         <md-drawer md-fixed md-permanent="clipped" class="md-scrollbar">
-          <MenuContent :tree="contentTree"></MenuContent>
+          <md-list>
+            <md-list-item>
+              <span class="md-list-item-text">Introduction</span>
+            </md-list-item>
+          </md-list>
+          <MenuGroup v-for="group in contentTree" :name="group.name" :title="group.title || group.menuTitle" :resources="group.resources" :key="group.key"></MenuGroup>
         </md-drawer>
       </div>
       <div class="md-layout-item api-reference">
-        <md-content class="api-content">
+        <md-content id="api-content" class="api-content">
           <ContentGroup v-for="group in contentTree" :name="group.name" :title="group.title" :description="group.description" :resources="group.resources" :key="group.key"></ContentGroup>
         </md-content>
       </div>
@@ -18,7 +23,7 @@
 
 <script>
 import axios from 'axios'
-import MenuContent from '@/components/Menu/MenuContent'
+import MenuGroup from '@/components/Menu/MenuGroup'
 import ContentGroup from '@/components/Content/ContentGroup'
 import Ajv from 'ajv'
 
@@ -34,7 +39,7 @@ const REST_METHOD_REGEX = /^(get|post|put|patch|delete|options|head)$/i
 
 export default {
   name: 'Reference',
-  components: {MenuContent, ContentGroup},
+  components: {MenuGroup, ContentGroup},
   data: () => ({
     appId: null,
     docId: null,
@@ -157,7 +162,7 @@ export default {
             method: op,
             summary: (openapi.paths[path][op].summary || openapi.paths[path].summary),
             description: (openapi.paths[path][op].description || openapi.paths[path].description),
-            operationId: (openapi.paths[path][op].operationId || (op + '-' + path.replace(/\//g, '-'))),
+            operationId: (openapi.paths[path][op].operationId || btoa(op + '-' + path).replace(/\+/g, '-').replace(/\//g, '_').replace(/[=]{1,2}$/, '')),
             parameters: this.mergeParameters(openapi.paths[path].parameters ? openapi.paths[path].parameters.concat(openapi.paths[path][op].parameters) : openapi.paths[path][op].parameters),
             requestBody: openapi.paths[path][op].requestBody,
             responses: openapi.paths[path][op].responses,
@@ -233,5 +238,9 @@ export default {
     position: sticky;
     top: 0;
     height: calc(100vh - 64px);
+  }
+
+  .md-drawer .md-list {
+    background-color: #fafafa;
   }
 </style>

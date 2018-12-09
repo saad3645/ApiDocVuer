@@ -14,6 +14,7 @@
     "vue-json-tree-view": "^2.1.4",
     "vue-material": "^1.0.0-beta-10.2",
     "vue-router": "^3.0.1",
+    "vue-scrollto": "^2.13.0",
     "vuelidate": "^0.7.4"
   },
   "devDependencies": {

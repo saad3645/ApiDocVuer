@@ -1,10 +1,12 @@
 import Vue from 'vue'
+// import VueScrollTo from 'vue-scrollto'
 import App from './App.vue'
 import router from './router'
 import {MdApp, MdButton, MdCard, MdContent, MdDivider, MdDrawer, MdField, MdIcon, MdList, MdMenu, MdProgress, MdRipple, MdSnackbar, MdTable, MdTabs, MdToolbar, MdTooltip} from 'vue-material/dist/components'
 import 'vue-material/dist/vue-material.min.css'
 import 'vue-material/dist/theme/default.css'
 
+// Vue.use(VueScrollTo)
 Vue.use(MdApp)
 Vue.use(MdButton)
 Vue.use(MdCard)

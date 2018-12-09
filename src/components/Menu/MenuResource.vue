@@ -38,4 +38,9 @@ export default {
     padding-top: 0px;
     padding-bottom: 0px;
   }
+
+  .md-list-item-expand {
+    border-top: none;
+    border-bottom: none;
+  }
 </style>

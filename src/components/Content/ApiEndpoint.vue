@@ -1,5 +1,5 @@
 <template>
-  <section class="api-endpoint">
+  <section :id="operationId" class="api-endpoint">
     <div class="endpoint-info">
       <h2 v-if="summary" class="endpoint-summary">{{summary}}</h2>
       <EndpointDefinition :method="method" :path="path" :servers="servers"></EndpointDefinition>

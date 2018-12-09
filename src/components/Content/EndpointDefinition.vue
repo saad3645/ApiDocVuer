@@ -100,8 +100,8 @@ export default {
   }
 
   .operation .operation-path .path {
-    background-color: #F8DFD6;
     color: #571800;
+    font-weight: 500;
   }
 
   .operation .operation-path .query {
