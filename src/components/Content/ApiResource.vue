@@ -8,7 +8,7 @@
     </div>
     <div v-for="endpoint in endpoints" :key="endpoint.operationId">
       <md-divider></md-divider>
-      <ApiEndpoint  :operationId="endpoint.operationId" :method="endpoint.method" :path="endpoint.path" :summary="endpoint.summary" :description="endpoint.description" :parameters="endpoint['x-parameters']" :requestBody="endpoint.requestBody" :responses="endpoint.responses" :deprecated="endpoint.deprecated" :security="endpoint.security" :servers="endpoint.servers"></ApiEndpoint>
+      <ApiEndpoint  :operationId="endpoint.operationId" :method="endpoint.method" :path="endpoint.path" :summary="endpoint.summary" :description="endpoint.description" :parameters="endpoint.parameters" :requestBody="endpoint.requestBody" :responses="endpoint.responses" :deprecated="endpoint.deprecated" :security="endpoint.security" :servers="endpoint.servers"></ApiEndpoint>
     </div>
   </div>
 </template>
@@ -42,6 +42,6 @@ export default {
   }
 
   .md-primary.resource-title {
-    color: rgb(50, 50, 159);
+    color: #3232a0;
   }
 </style>

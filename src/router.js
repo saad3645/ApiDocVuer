@@ -51,14 +51,31 @@ export default new Router({
           component: () => import(/* webpackChunkName: "doc_overview" */ './views/Docs/Overview.vue')
         },
         {
-          path: ':appId/:docId//reference/:version',
+          path: ':appId/:docId/reference/:version',
           name: 'Reference',
           component: () => import(/* webpackChunkName: "doc_reference" */ './views/Docs/Reference.vue')
         },
         {
-          path: ':appId/:docId//reference/:version/:branch',
+          path: ':appId/:docId/reference/:version/:branch',
           name: 'ReferenceBranch',
           component: () => import(/* webpackChunkName: "doc_reference" */ './views/Docs/Reference.vue')
+        }
+      ]
+    },
+    {
+      path: '/editor',
+      component: () => import(/* webpackChunkName: "editor_root" */ './components/EditorLayout.vue'),
+      beforeEnter: authenticate,
+      children: [
+        {
+          path: ':appId/:docId/:version',
+          name: 'Editor',
+          component: () => import(/* webpackChunkName: "editor_index" */ './views/Editor/Index.vue')
+        },
+        {
+          path: ':appId/:docId/:version/:branch',
+          name: 'EditorBranch',
+          component: () => import(/* webpackChunkName: "editor_index" */ './views/Editor/Index.vue')
         }
       ]
     },

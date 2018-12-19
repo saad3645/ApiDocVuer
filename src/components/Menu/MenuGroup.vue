@@ -1,7 +1,7 @@
 <template>
   <md-list md-expand-single class="menu-group">
-    <md-list-item v-if="title || name">
-      <span class="md-list-item-text">{{displayName}}</span>
+    <md-list-item v-if="title || name" class="group-heading">
+      <span class="md-list-item-text group-title">{{displayName}}</span>
     </md-list-item>
     <MenuResource v-for="resource in resourceList" :name="resource.name" :title="resource.title || resource['x-title']" :path="resource.path" :endpoints="resource.endpoints" :key="resource.key"></MenuResource>
   </md-list>
@@ -31,4 +31,16 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+  .menu-group .group-title {
+    font-family: Montserrat, sans-serif;
+    font-size: 13px;
+    color: #999999;
+    text-transform: uppercase;
+  }
+</style>
+
+<style>
+  .group-heading .md-list-item-content.md-disabled {
+    min-height: 22px;
+  }
 </style>

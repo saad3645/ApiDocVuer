@@ -34,7 +34,7 @@ import contentSchema from '../../assets/schemas/openapi_3.0.x/content.schema.jso
 import tagsSchema from '../../assets/schemas/openapi_3.0.x/tags.schema.json'
 import openapiSchema from '../../assets/schemas/openapi_3.0.x/openapi.schema.json'
 
-const ajv = new Ajv()
+const ajv = new Ajv({schemas: [openapiSchema, schemaDefSchema, serversSchema, parametersSchema, contentSchema, tagsSchema]})
 const REST_METHOD_REGEX = /^(get|post|put|patch|delete|options|head)$/i
 
 export default {
@@ -60,13 +60,13 @@ export default {
     this.docs = this.$route.params.docs
 
     this.openapi = await this.getOpenApi(this.appId, this.docId, this.version, this.branch)
-    const validate = ajv.addSchema([schemaDefSchema, serversSchema, parametersSchema, contentSchema, tagsSchema]).compile(openapiSchema)
-    if (validate(this.openapi)) {
+    const valid = ajv.validate(openapiSchema, this.openapi)
+    if (valid) {
       this.openapiSpecVersion = this.openapi.openapi
       this.contentTree = this.buildContentTree(this.openapi)
     }
     else {
-      console.log(validate.errors)
+      console.log(ajv.errors)
     }
 
     this.collections = this.getCollections
@@ -219,18 +219,46 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .md-layout-item.menu-bar {
+  @media (min-width: 1024px) {
+    .md-layout-item.menu-bar {
+      min-width: 250px;
+      max-width: 250px;
+    }
+    .md-drawer {
+      min-width: 250px;
+      max-width: 250px;
+    }
+  }
+  @media (min-width: 1600px) {
+    .md-layout-item.menu-bar {
+      min-width: 300px;
+      max-width: 300px;
+    }
+    .md-drawer {
+      min-width: 300px;
+      max-width: 300px;
+    }
+  }
+  @media (min-width: 1920px) {
+    .md-layout-item.menu-bar {
+      min-width: 320px;
+      max-width: 320px;
+    }
+    .md-drawer {
+      min-width: 320px;
+      max-width: 320px;
+    }
+  }
+  /*.md-layout-item.menu-bar {
     min-width: 250px;
     max-width: 250px;
-  }
+  }*/
 
   .api-reference-wrap .md-toolbar h3.md-title {
     margin-right: 20px;
   }
 
   .md-drawer {
-    min-width: 250px;
-    max-width: 250px;
     background-color: #fafafa;
     border-right-style: solid;
     border-right-width: 1px;

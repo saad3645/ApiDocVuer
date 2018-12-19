@@ -17,13 +17,13 @@
                 <md-button class="md-primary" md-menu-trigger>{{selectedDoc[app._id]}}</md-button>
                 <md-tooltip md-direction="top">Select Document</md-tooltip>
                 <md-menu-content>
-                  <md-menu-item v-for="doc in app._source.docs" :key="doc" @click="selectDoc(app._id, doc)">{{doc}}</md-menu-item>
+                  <md-menu-item v-for="doc in app._source.docs" :key="doc" @click="selectDoc(app._id, doc, app._source.docs)">{{doc}}</md-menu-item>
                 </md-menu-content>
               </md-menu>
-              <md-button v-if="app._source.docs && selectedDoc[app._id]" class="md-icon-button" :to="{name: 'Reference', params: {appId: app._id, docId: selectedDoc[app._id], version: 'current', docs: app._source.docs}}">
+              <!-- <md-button v-if="app._source.docs && selectedDoc[app._id]" class="md-icon-button" :to="{name: 'Reference', params: {appId: app._id, docId: selectedDoc[app._id], version: 'current', docs: app._source.docs}}">
                 <md-icon>explore</md-icon>
                 <md-tooltip>View Api Reference</md-tooltip>
-              </md-button>
+              </md-button> -->
               <md-button v-if="!app._source.docs" class="md-dense" disabled>No Doc Available</md-button>
             </md-card-actions>
           </md-card>
@@ -56,8 +56,8 @@ export default {
   },
 
   methods: {
-    selectDoc(appName, doc) {
-      this.selectedDoc[appName] = doc
+    selectDoc(appId, doc, docs) {
+      this.$router.push({name: 'Reference', params: {appId: appId, docId: doc, version: 'current', docs: docs}})
     },
 
     async getAppList() {

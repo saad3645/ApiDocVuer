@@ -8,7 +8,7 @@
         <span class="md-subheader">{{subheading}}</span>
         <div class="md-toolbar-section-end">
           <md-button v-if="superuser" class="md-primary">Create</md-button>
-          <md-button v-if="currentRoute.name !== 'Apps'" class="md-primary">Apps</md-button>
+          <md-button class="md-primary" :to="{path: '/apps'}">Apps</md-button>
           <md-button v-if="superuser" class="md-primary">Team</md-button>
           <md-button class="md-icon-button"><md-icon>account_circle</md-icon></md-button>
         </div>
@@ -48,8 +48,23 @@ export default {
     height: 100vh;
   }
 
+  @media (min-width: 1024px) {
+    .branding {
+      width: calc(250px - 16px);
+    }
+  }
+  @media (min-width: 1600px) {
+    .branding {
+      width: calc(300px - 16px);
+    }
+  }
+  @media (min-width: 1920px) {
+    .branding {
+      width: calc(320px - 16px);
+    }
+  }
+
   .branding {
-    width: calc(250px - 16px);
     text-align: left;
   }
 
